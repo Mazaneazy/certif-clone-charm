@@ -33,6 +33,7 @@ interface MenuItemType {
   path: string;
   icon: React.ElementType;
   permission?: string;
+  ariaLabel?: string;
 }
 
 const AppSidebar = () => {
@@ -44,53 +45,62 @@ const AppSidebar = () => {
       title: "Tableau de bord",
       path: "/",
       icon: Home,
+      ariaLabel: "Accéder au tableau de bord"
     },
     {
       title: "Dossiers",
       path: "/documents",
       icon: FileText,
       permission: "view_certifications",
+      ariaLabel: "Voir les dossiers de certification"
     },
     {
       title: "Certifications",
       path: "/certifications",
       icon: FileCheck,
       permission: "view_certifications",
+      ariaLabel: "Accéder aux certifications"
     },
     {
       title: "Inspections",
       path: "/inspections",
       icon: Calendar,
       permission: "perform_inspection",
+      ariaLabel: "Gérer les inspections"
     },
     {
       title: "Normes",
       path: "/standards",
       icon: BadgeCheck,
       permission: "view_certifications",
+      ariaLabel: "Consulter les normes"
     },
     {
       title: "Paiements",
       path: "/payments",
       icon: CreditCard,
       permission: "manage_payments",
+      ariaLabel: "Gérer les paiements"
     },
     {
       title: "Utilisateurs",
       path: "/users",
       icon: Users,
       permission: "manage_users",
+      ariaLabel: "Gérer les utilisateurs"
     },
     {
       title: "Rapports",
       path: "/reports",
       icon: BarChart,
       permission: "view_reports",
+      ariaLabel: "Voir les rapports"
     },
     {
       title: "Historique",
       path: "/history",
       icon: Clock,
+      ariaLabel: "Consulter l'historique"
     },
   ];
 
@@ -99,12 +109,14 @@ const AppSidebar = () => {
       title: "Profil",
       path: "/profile",
       icon: User,
+      ariaLabel: "Accéder à votre profil"
     },
     {
       title: "Paramètres",
       path: "/settings",
       icon: Settings,
       permission: "manage_settings",
+      ariaLabel: "Modifier les paramètres"
     },
   ];
 
@@ -127,7 +139,7 @@ const AppSidebar = () => {
 
   return (
     <Sidebar>
-      <SidebarHeader className="flex items-center justify-center p-4">
+      <SidebarHeader className="flex items-center justify-center p-4 border-b border-sidebar-border">
         <Logo />
       </SidebarHeader>
       <SidebarContent>
@@ -140,9 +152,15 @@ const AppSidebar = () => {
                   <SidebarMenuButton 
                     asChild 
                     isActive={isPathActive(item.path)}
+                    tooltip={item.title}
                   >
-                    <Link to={item.path} className="flex items-center">
-                      <item.icon className="mr-2 h-5 w-5" />
+                    <Link 
+                      to={item.path} 
+                      className="flex items-center"
+                      aria-label={item.ariaLabel || item.title}
+                      aria-current={isPathActive(item.path) ? "page" : undefined}
+                    >
+                      <item.icon className="mr-2 h-5 w-5" aria-hidden="true" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -161,9 +179,15 @@ const AppSidebar = () => {
                   <SidebarMenuButton 
                     asChild
                     isActive={isPathActive(item.path)}
+                    tooltip={item.title}
                   >
-                    <Link to={item.path} className="flex items-center">
-                      <item.icon className="mr-2 h-5 w-5" />
+                    <Link 
+                      to={item.path} 
+                      className="flex items-center"
+                      aria-label={item.ariaLabel || item.title}
+                      aria-current={isPathActive(item.path) ? "page" : undefined}
+                    >
+                      <item.icon className="mr-2 h-5 w-5" aria-hidden="true" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>

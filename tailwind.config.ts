@@ -62,6 +62,11 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				anor: {
+					blue: '#0066b2',
+					lightBlue: '#0088e0',
+					darkBlue: '#004c85',
 				}
 			},
 			borderRadius: {
@@ -90,7 +95,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+			boxShadow: {
+				'anor': '0 4px 12px rgba(0, 102, 178, 0.15)',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

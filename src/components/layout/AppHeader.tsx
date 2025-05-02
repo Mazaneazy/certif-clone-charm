@@ -55,15 +55,16 @@ const AppHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 shadow-sm">
       <Button
         variant="outline"
         size="icon"
         className="md:hidden"
         onClick={() => setOpenMobile(!openMobile)}
+        aria-label="Ouvrir le menu de navigation"
       >
-        <Menu className="h-5 w-5" />
-        <span className="sr-only">Toggle Menu</span>
+        <Menu className="h-5 w-5" aria-hidden="true" />
+        <span className="sr-only">Menu de navigation</span>
       </Button>
 
       <div className="flex-1" />
@@ -71,13 +72,19 @@ const AppHeader = () => {
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="relative focus-visible-ring" 
+              aria-label={`Notifications - ${unreadCount} non lues`}
+            >
+              <Bell className="h-5 w-5" aria-hidden="true" />
               {unreadCount > 0 && (
                 <Badge
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0 bg-red-500"
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center rounded-full p-0 bg-anor-blue"
                   variant="secondary"
                 >
+                  <span className="sr-only">{unreadCount} notifications non lues</span>
                   {unreadCount}
                 </Badge>
               )}
@@ -87,7 +94,12 @@ const AppHeader = () => {
             <div className="flex items-center justify-between px-4 py-2 font-medium">
               <span>Notifications</span>
               {unreadCount > 0 && (
-                <Button variant="ghost" size="sm" className="h-auto text-xs">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-auto text-xs text-anor-blue hover:text-anor-blue hover:bg-blue-50"
+                  aria-label="Marquer toutes les notifications comme lues"
+                >
                   Marquer tout comme lu
                 </Button>
               )}
@@ -102,7 +114,7 @@ const AppHeader = () => {
                 <DropdownMenuItem
                   key={notification.id}
                   className={`flex cursor-pointer flex-col items-start px-4 py-2 ${
-                    !notification.read ? 'bg-muted/50' : ''
+                    !notification.read ? 'bg-blue-50 text-anor-blue' : ''
                   }`}
                 >
                   <div className="text-sm font-medium">{notification.title}</div>
@@ -111,8 +123,8 @@ const AppHeader = () => {
               ))
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="justify-center" asChild>
-              <Link to="/notifications">Voir toutes les notifications</Link>
+            <DropdownMenuItem className="justify-center text-anor-blue" asChild>
+              <Link to="/notifications" aria-label="Voir toutes les notifications">Voir toutes les notifications</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -120,10 +132,14 @@ const AppHeader = () => {
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 flex items-center gap-2 pl-2 pr-1">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.avatar} />
-                  <AvatarFallback>{getInitials()}</AvatarFallback>
+              <Button 
+                variant="ghost" 
+                className="relative h-8 flex items-center gap-2 pl-2 pr-1 focus-visible-ring"
+                aria-label="Menu utilisateur"
+              >
+                <Avatar className="h-8 w-8 border border-primary/10">
+                  <AvatarImage src={user.avatar} alt={`Photo de profil de ${user.name}`} />
+                  <AvatarFallback className="bg-anor-blue text-white">{getInitials()}</AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:flex flex-col items-start text-left">
                   <span className="text-sm font-medium leading-none">{user.name}</span>
@@ -131,7 +147,7 @@ const AppHeader = () => {
                     {roleLabels[user.role] || user.role}
                   </span>
                 </div>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -143,23 +159,32 @@ const AppHeader = () => {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link className="flex w-full cursor-pointer items-center" to="/profile">
-                  <User className="mr-2 h-4 w-4" />
+                <Link 
+                  className="flex w-full cursor-pointer items-center" 
+                  to="/profile"
+                  aria-label="Accéder à votre profil"
+                >
+                  <User className="mr-2 h-4 w-4" aria-hidden="true" />
                   <span>Profil</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link className="flex w-full cursor-pointer items-center" to="/settings">
-                  <Settings className="mr-2 h-4 w-4" />
+                <Link 
+                  className="flex w-full cursor-pointer items-center" 
+                  to="/settings"
+                  aria-label="Accéder aux paramètres"
+                >
+                  <Settings className="mr-2 h-4 w-4" aria-hidden="true" />
                   <span>Paramètres</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer"
+                className="cursor-pointer text-destructive focus:text-destructive"
                 onSelect={() => logout()}
+                aria-label="Se déconnecter"
               >
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
                 <span>Se déconnecter</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
