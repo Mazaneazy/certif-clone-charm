@@ -24,7 +24,7 @@ import { useSidebar } from '@/components/ui/sidebar';
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
-  const { collapsed, setCollapsed } = useSidebar();
+  const { open, setOpen, openMobile, setOpenMobile } = useSidebar();
   const [notifications] = useState([
     { id: 1, title: 'Nouvelle demande de certification', read: false },
     { id: 2, title: 'Certification ISO 9001 approuvée', read: false },
@@ -60,7 +60,7 @@ const AppHeader = () => {
         variant="outline"
         size="icon"
         className="md:hidden"
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => setOpenMobile(!openMobile)}
       >
         <Menu className="h-5 w-5" />
         <span className="sr-only">Toggle Menu</span>
