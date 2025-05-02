@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, UploadCloud, Filter, ChevronDown } from 'lucide-react';
+import { Search, UploadCloud, Filter, ChevronDown, FileText } from 'lucide-react';
 import DocumentCard from '@/components/documents/DocumentCard';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,42 +31,42 @@ const Documents = () => {
       id: 1,
       title: "Attestation de formation",
       date: "23 avril 2025",
-      status: "approved",
+      status: "approved" as "approved",
       type: "pdf",
     },
     {
       id: 2,
       title: "Certificat d'expérience professionnelle",
       date: "18 avril 2025",
-      status: "pending",
+      status: "pending" as "pending",
       type: "docx",
     },
     {
       id: 3,
       title: "Diplôme universitaire",
       date: "10 avril 2025",
-      status: "review",
+      status: "review" as "review",
       type: "pdf",
     },
     {
       id: 4,
       title: "Attestation de stage",
       date: "5 avril 2025", 
-      status: "rejected",
+      status: "rejected" as "rejected",
       type: "pdf",
     },
     {
       id: 5,
       title: "Certificat de compétences",
       date: "28 mars 2025",
-      status: "approved",
+      status: "approved" as "approved",
       type: "docx",
     },
     {
       id: 6,
       title: "Lettre de recommandation",
       date: "15 mars 2025",
-      status: "approved",
+      status: "approved" as "approved",
       type: "pdf",
     },
   ];
