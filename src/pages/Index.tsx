@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,10 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { FileText, UploadCloud, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import DocumentCard from '@/components/documents/DocumentCard';
+import DocumentDetails from '@/components/documents/DocumentDetails';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const { toast } = useToast();
+  const [selectedDocument, setSelectedDocument] = useState<null | {
+    id: number;
+    title: string;
+    date: string;
+    status: 'pending' | 'review' | 'approved' | 'rejected';
+    type: string;
+  }>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const recentDocuments = [
     {
@@ -41,6 +50,15 @@ const Index = () => {
       title: "Fonctionnalité à venir",
       description: "Le téléchargement de document sera bientôt disponible.",
     });
+  };
+
+  const viewDocumentDetails = (document: typeof recentDocuments[0]) => {
+    setSelectedDocument(document);
+    setIsDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setIsDetailsOpen(false);
   };
 
   return (
@@ -125,11 +143,21 @@ const Index = () => {
           
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {recentDocuments.map((doc) => (
-              <DocumentCard key={doc.id} document={doc} />
+              <DocumentCard 
+                key={doc.id} 
+                document={doc}
+                onClick={() => viewDocumentDetails(doc)}
+              />
             ))}
           </div>
         </div>
       </div>
+
+      <DocumentDetails 
+        document={selectedDocument}
+        isOpen={isDetailsOpen}
+        onClose={closeDetails}
+      />
     </AppLayout>
   );
 };

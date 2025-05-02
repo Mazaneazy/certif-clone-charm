@@ -19,12 +19,31 @@ import {
 } from "@/components/ui/select";
 import { Search, UploadCloud, Filter, ChevronDown, FileText } from 'lucide-react';
 import DocumentCard from '@/components/documents/DocumentCard';
+import DocumentDetails from '@/components/documents/DocumentDetails';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const Documents = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDocument, setSelectedDocument] = useState<null | {
+    id: number;
+    title: string;
+    date: string;
+    status: 'pending' | 'review' | 'approved' | 'rejected';
+    type: string;
+  }>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   
   const documents = [
     {
@@ -69,6 +88,48 @@ const Documents = () => {
       status: "approved" as "approved",
       type: "pdf",
     },
+    {
+      id: 7,
+      title: "Certificat de formation continue",
+      date: "10 mars 2025",
+      status: "approved" as "approved",
+      type: "pdf",
+    },
+    {
+      id: 8,
+      title: "Attestation de présence",
+      date: "5 mars 2025",
+      status: "pending" as "pending",
+      type: "docx",
+    },
+    {
+      id: 9,
+      title: "Diplôme professionnel",
+      date: "28 février 2025",
+      status: "review" as "review",
+      type: "pdf",
+    },
+    {
+      id: 10,
+      title: "Certification technique",
+      date: "20 février 2025",
+      status: "approved" as "approved",
+      type: "pdf",
+    },
+    {
+      id: 11,
+      title: "Relevé de notes",
+      date: "15 février 2025",
+      status: "rejected" as "rejected",
+      type: "docx",
+    },
+    {
+      id: 12,
+      title: "Attestation de compétences",
+      date: "10 février 2025",
+      status: "approved" as "approved",
+      type: "pdf",
+    },
   ];
 
   const handleUpload = () => {
@@ -76,6 +137,15 @@ const Documents = () => {
       title: "Fonctionnalité à venir",
       description: "Le téléchargement de document sera bientôt disponible.",
     });
+  };
+
+  const viewDocumentDetails = (document: typeof documents[0]) => {
+    setSelectedDocument(document);
+    setIsDetailsOpen(true);
+  };
+
+  const closeDetails = () => {
+    setIsDetailsOpen(false);
   };
 
   const filteredDocuments = documents.filter(doc => {
@@ -91,6 +161,13 @@ const Documents = () => {
     
     return true;
   });
+
+  // Pagination logic
+  const documentsPerPage = 6;
+  const indexOfLastDocument = currentPage * documentsPerPage;
+  const indexOfFirstDocument = indexOfLastDocument - documentsPerPage;
+  const currentDocuments = filteredDocuments.slice(indexOfFirstDocument, indexOfLastDocument);
+  const totalPages = Math.ceil(filteredDocuments.length / documentsPerPage);
 
   return (
     <AppLayout>
@@ -113,10 +190,19 @@ const Documents = () => {
               placeholder="Rechercher un document..."
               className="pl-10"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // Reset to first page on search
+              }}
             />
           </div>
-          <Select onValueChange={setStatusFilter} defaultValue="all">
+          <Select 
+            onValueChange={(value) => {
+              setStatusFilter(value);
+              setCurrentPage(1); // Reset to first page on filter change
+            }} 
+            defaultValue="all"
+          >
             <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
@@ -130,12 +216,81 @@ const Documents = () => {
           </Select>
         </div>
 
-        {filteredDocuments.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredDocuments.map((doc) => (
-              <DocumentCard key={doc.id} document={doc} />
-            ))}
-          </div>
+        {currentDocuments.length > 0 ? (
+          <>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {currentDocuments.map((doc) => (
+                <DocumentCard 
+                  key={doc.id} 
+                  document={doc} 
+                  onClick={() => viewDocumentDetails(doc)}
+                />
+              ))}
+            </div>
+            
+            {totalPages > 1 && (
+              <Pagination className="mt-6">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(prev => Math.max(prev - 1, 1));
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }).map((_, index) => {
+                    const pageNumber = index + 1;
+                    // Show first page, last page, and pages around current page
+                    if (
+                      pageNumber === 1 || 
+                      pageNumber === totalPages ||
+                      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationLink 
+                            href="#" 
+                            isActive={pageNumber === currentPage}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setCurrentPage(pageNumber);
+                            }}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (
+                      (pageNumber === 2 && currentPage > 3) ||
+                      (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
+                    ) {
+                      return (
+                        <PaginationItem key={pageNumber}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  })}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      href="#" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </>
         ) : (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-10">
@@ -147,6 +302,7 @@ const Documents = () => {
               <Button variant="outline" onClick={() => {
                 setSearchQuery('');
                 setStatusFilter('all');
+                setCurrentPage(1);
               }}>
                 Réinitialiser les filtres
               </Button>
@@ -154,6 +310,12 @@ const Documents = () => {
           </Card>
         )}
       </div>
+      
+      <DocumentDetails 
+        document={selectedDocument}
+        isOpen={isDetailsOpen}
+        onClose={closeDetails}
+      />
     </AppLayout>
   );
 };

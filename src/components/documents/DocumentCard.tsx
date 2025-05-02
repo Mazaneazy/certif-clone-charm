@@ -13,9 +13,10 @@ interface DocumentProps {
     status: 'pending' | 'review' | 'approved' | 'rejected';
     type: string;
   };
+  onClick?: () => void;
 }
 
-const DocumentCard = ({ document }: DocumentProps) => {
+const DocumentCard = ({ document, onClick }: DocumentProps) => {
   const getStatusBadge = () => {
     switch (document.status) {
       case 'pending':
@@ -41,7 +42,7 @@ const DocumentCard = ({ document }: DocumentProps) => {
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow">
       <CardHeader className="p-4 pb-2 flex flex-row justify-between items-start">
         <div className="flex items-start gap-3">
           {getFileIcon()}
@@ -55,7 +56,12 @@ const DocumentCard = ({ document }: DocumentProps) => {
         {getStatusBadge()}
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-end">
-        <Button variant="outline" size="sm" className="flex items-center gap-1">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center gap-1" 
+          onClick={onClick}
+        >
           <Eye className="h-3 w-3" />
           <span>Voir</span>
         </Button>
