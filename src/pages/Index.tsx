@@ -1,163 +1,213 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import AppLayout from '@/components/layout/AppLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { FileText, UploadCloud, Clock, CheckCircle, AlertCircle } from 'lucide-react';
-import DocumentCard from '@/components/documents/DocumentCard';
-import DocumentDetails from '@/components/documents/DocumentDetails';
-import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
+import { BarChart, Calendar, CreditCard, FileCheck, FileText, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const { toast } = useToast();
-  const [selectedDocument, setSelectedDocument] = useState<null | {
-    id: number;
-    title: string;
-    date: string;
-    status: 'pending' | 'review' | 'approved' | 'rejected';
-    type: string;
-  }>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
-  const recentDocuments = [
+  const { user } = useAuth();
+  
+  // Statistiques de démonstration
+  const stats = [
     {
-      id: 1,
-      title: "Attestation de formation",
-      date: "23 avril 2025",
-      status: "approved" as "approved",
-      type: "pdf",
+      title: "Dossiers",
+      value: "124",
+      description: "12 nouveaux ce mois",
+      icon: FileText,
+      color: "bg-blue-500",
+      link: "/documents"
     },
     {
-      id: 2,
-      title: "Certificat d'expérience professionnelle",
-      date: "18 avril 2025",
-      status: "pending" as "pending",
-      type: "docx",
+      title: "Certifications",
+      value: "86",
+      description: "5 expirées ce mois",
+      icon: FileCheck,
+      color: "bg-green-500",
+      link: "/certifications"
     },
     {
-      id: 3,
-      title: "Diplôme universitaire",
-      date: "10 avril 2025",
-      status: "review" as "review",
-      type: "pdf",
+      title: "Inspections",
+      value: "28",
+      description: "3 planifiées aujourd'hui",
+      icon: Calendar,
+      color: "bg-orange-500",
+      link: "/inspections"
+    },
+    {
+      title: "Paiements",
+      value: "15.2M FCFA",
+      description: "2.1M FCFA ce mois",
+      icon: CreditCard,
+      color: "bg-purple-500",
+      link: "/payments"
     },
   ];
 
-  const handleUpload = () => {
-    toast({
-      title: "Fonctionnalité à venir",
-      description: "Le téléchargement de document sera bientôt disponible.",
-    });
-  };
+  // Activités récentes de démonstration
+  const recentActivities = [
+    {
+      id: 1,
+      action: "Certification ISO 9001 approuvée",
+      user: "Charles Directeur",
+      time: "Il y a 2 heures"
+    },
+    {
+      id: 2,
+      action: "Paiement enregistré pour ACME SARL",
+      user: "Sophie Comptable",
+      time: "Il y a 3 heures"
+    },
+    {
+      id: 3,
+      action: "Inspection réalisée chez XYZ Inc.",
+      user: "Jean Inspecteur",
+      time: "Il y a 1 jour"
+    },
+    {
+      id: 4,
+      action: "Nouveau dossier créé pour ABC Ltd",
+      user: "Marie Gestionnaire",
+      time: "Il y a 2 jours"
+    },
+  ];
 
-  const viewDocumentDetails = (document: typeof recentDocuments[0]) => {
-    setSelectedDocument(document);
-    setIsDetailsOpen(true);
-  };
+  // Dossiers récents de démonstration
+  const recentDocs = [
+    {
+      id: 1,
+      title: "Demande ISO 22000 - ACME Foods",
+      status: "En cours",
+      date: "01/05/2025"
+    },
+    {
+      id: 2,
+      title: "Renouvellement ISO 9001 - Tech Solutions",
+      status: "En attente de paiement",
+      date: "30/04/2025"
+    },
+    {
+      id: 3,
+      title: "Certification produit - Savon Naturel",
+      status: "En inspection",
+      date: "28/04/2025"
+    },
+  ];
 
-  const closeDetails = () => {
-    setIsDetailsOpen(false);
-  };
+  // Filtrer les statistiques selon les permissions
+  const filteredStats = stats;
 
   return (
     <AppLayout>
-      <div className="space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
-            <p className="text-muted-foreground">Bienvenue sur votre espace de certification.</p>
-          </div>
-          <Button onClick={handleUpload} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
-            <UploadCloud className="h-4 w-4" />
-            <span>Ajouter un document</span>
-          </Button>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Tableau de bord</h1>
+          <p className="text-muted-foreground">Bienvenue, {user?.name}!</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {filteredStats.map((stat) => (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.title}
+                </CardTitle>
+                <div className={`${stat.color} p-2 rounded-md`}>
+                  <stat.icon className="h-4 w-4 text-white" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className="text-xs text-muted-foreground pt-1">
+                  {stat.description}
+                </p>
+                <Button variant="link" className="p-0 h-auto text-xs mt-2" asChild>
+                  <Link to={stat.link}>Voir tout</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Documents totaux</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle>Activités récentes</CardTitle>
+              <CardDescription>
+                Événements des derniers jours sur la plateforme
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">+3 ce mois-ci</p>
+            <CardContent className="space-y-4">
+              {recentActivities.map((activity) => (
+                <div key={activity.id} className="flex items-start space-x-4">
+                  <div className="bg-muted rounded-full p-2">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {activity.action}
+                    </p>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <span>{activity.user}</span>
+                      <span className="mx-1">•</span>
+                      <span>{activity.time}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
+
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">En attente</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardHeader>
+              <CardTitle>Dossiers récents</CardTitle>
+              <CardDescription>
+                Derniers dossiers de certification créés
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground">Dernière mise à jour: 2h</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Certifications</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground">+2 ce mois-ci</p>
+              <div className="space-y-4">
+                {recentDocs.map((doc) => (
+                  <div key={doc.id} className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {doc.title}
+                      </p>
+                      <div className="flex items-center text-xs text-muted-foreground">
+                        <span>{doc.status}</span>
+                        <span className="mx-1">•</span>
+                        <span>{doc.date}</span>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link to="/documents">Détails</Link>
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="col-span-3">
+        <Card>
           <CardHeader>
-            <CardTitle>Progression de certification</CardTitle>
+            <CardTitle>Statistiques des certifications</CardTitle>
+            <CardDescription>
+              Répartition des certifications par statut et type
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Certification professionnelle</span>
-                  <span className="text-sm font-medium">70%</span>
-                </div>
-                <Progress value={70} className="h-2" />
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Certification technique</span>
-                  <span className="text-sm font-medium">30%</span>
-                </div>
-                <Progress value={30} className="h-2" />
-              </div>
+          <CardContent className="h-80 flex items-center justify-center">
+            <div className="text-center">
+              <BarChart className="mx-auto h-12 w-12 text-gray-400" />
+              <p className="mt-1 text-sm text-gray-500">
+                Les graphiques statistiques seront bientôt disponibles
+              </p>
             </div>
           </CardContent>
         </Card>
-
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Documents récents</h2>
-            <Button variant="outline" size="sm" asChild>
-              <a href="/documents">Voir tous</a>
-            </Button>
-          </div>
-          
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {recentDocuments.map((doc) => (
-              <DocumentCard 
-                key={doc.id} 
-                document={doc}
-                onClick={() => viewDocumentDetails(doc)}
-              />
-            ))}
-          </div>
-        </div>
       </div>
-
-      <DocumentDetails 
-        document={selectedDocument}
-        isOpen={isDetailsOpen}
-        onClose={closeDetails}
-      />
     </AppLayout>
   );
 };
