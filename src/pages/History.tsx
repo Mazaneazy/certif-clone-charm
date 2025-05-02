@@ -34,18 +34,26 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { FileText, Download, Eye, Search, Filter, Calendar, FileOutput } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
+import { FileText, Download, Eye, Search, Filter, Calendar, FileOutput, Copy, File, Printer } from 'lucide-react';
+import DocumentDetails from '@/components/documents/DocumentDetails';
 
 const History = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [currentMonth, setCurrentMonth] = useState('Avril 2025');
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [documentDetailsOpen, setDocumentDetailsOpen] = useState(false);
 
   const activities = [
     {
       id: 1,
       document: "Attestation de formation",
       type: "Document téléchargé",
+      docType: "pdf",
       status: "completed",
       date: "23 avril 2025",
       time: "14:30",
@@ -55,6 +63,7 @@ const History = () => {
       id: 2,
       document: "Certificat professionnel",
       type: "Document validé",
+      docType: "pdf",
       status: "completed",
       date: "22 avril 2025",
       time: "10:15",
@@ -64,6 +73,7 @@ const History = () => {
       id: 3,
       document: "Diplôme universitaire",
       type: "Document refusé",
+      docType: "doc",
       status: "rejected",
       date: "20 avril 2025",
       time: "09:45",
@@ -74,6 +84,7 @@ const History = () => {
       id: 4,
       document: "Attestation de stage",
       type: "Document téléchargé",
+      docType: "pdf",
       status: "completed",
       date: "15 avril 2025",
       time: "16:20",
@@ -83,6 +94,7 @@ const History = () => {
       id: 5,
       document: "Certificat de compétences",
       type: "Document en révision",
+      docType: "doc",
       status: "pending",
       date: "10 avril 2025",
       time: "11:00",
@@ -92,6 +104,7 @@ const History = () => {
       id: 6,
       document: "Attestation de formation",
       type: "Document modifié",
+      docType: "xls",
       status: "completed",
       date: "5 avril 2025",
       time: "14:30",
@@ -118,26 +131,61 @@ const History = () => {
     }
   };
 
-  // Filter activities based on search term and status filter
+  const documentTypes = [
+    { value: "all", label: "Tous les types" },
+    { value: "pdf", label: "PDF" },
+    { value: "doc", label: "Word" },
+    { value: "xls", label: "Excel" },
+  ];
+
+  // Filter activities based on search term, status filter, and document type filter
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.document.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           activity.type.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesType = typeFilter === 'all' || activity.docType === typeFilter;
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   const handleExportCSV = () => {
-    // In a real application, this would generate and download a CSV file
-    console.log('Exporting activities as CSV');
+    toast({
+      title: "Export CSV initié",
+      description: "Votre fichier CSV est en cours de génération.",
+    });
     // Mock implementation - in real app this would create and trigger download of a CSV file
-    alert('Export CSV fonctionnalité sera bientôt disponible');
   };
 
   const handleExportPDF = () => {
-    // In a real application, this would generate and download a PDF file
-    console.log('Exporting activities as PDF');
+    toast({
+      title: "Export PDF initié",
+      description: "Votre fichier PDF est en cours de génération.",
+    });
     // Mock implementation - in real app this would create and trigger download of a PDF file
-    alert('Export PDF fonctionnalité sera bientôt disponible');
+  };
+
+  const handleViewDocument = (document) => {
+    setSelectedDocument({
+      id: document.id,
+      title: document.document,
+      date: document.date,
+      status: document.status === 'completed' ? 'approved' : 
+             document.status === 'pending' ? 'review' : 'rejected',
+      type: document.docType,
+    });
+    setDocumentDetailsOpen(true);
+  };
+
+  const handleCloseDocumentDetails = () => {
+    setDocumentDetailsOpen(false);
+  };
+
+  const handleCopyLink = (id: number) => {
+    const link = `${window.location.origin}/documents/${id}`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Lien copié",
+      description: "Le lien du document a été copié dans le presse-papier.",
+    });
   };
 
   return (
@@ -238,23 +286,43 @@ const History = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="status-filter" className="sr-only">Filtrer par statut</Label>
-                  <Select 
-                    value={statusFilter} 
-                    onValueChange={setStatusFilter}
-                    aria-label="Filtrer par statut"
-                  >
-                    <SelectTrigger className="w-[180px]" id="status-filter">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Tous les statuts" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous les statuts</SelectItem>
-                      <SelectItem value="completed">Complété</SelectItem>
-                      <SelectItem value="pending">En cours</SelectItem>
-                      <SelectItem value="rejected">Refusé</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select 
+                      value={statusFilter} 
+                      onValueChange={setStatusFilter}
+                      aria-label="Filtrer par statut"
+                    >
+                      <SelectTrigger className="w-[180px]" id="status-filter">
+                        <Filter className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Tous les statuts" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tous les statuts</SelectItem>
+                        <SelectItem value="completed">Complété</SelectItem>
+                        <SelectItem value="pending">En cours</SelectItem>
+                        <SelectItem value="rejected">Refusé</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Select 
+                      value={typeFilter} 
+                      onValueChange={setTypeFilter}
+                      aria-label="Filtrer par type de document"
+                    >
+                      <SelectTrigger className="w-[180px]" id="type-filter">
+                        <File className="h-4 w-4 mr-2" />
+                        <SelectValue placeholder="Tous les types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {documentTypes.map(type => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
               
@@ -282,7 +350,12 @@ const History = () => {
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button variant="outline" size="icon" aria-label={`Voir le document ${activity.document}`}>
+                                    <Button 
+                                      variant="outline" 
+                                      size="icon" 
+                                      onClick={() => handleViewDocument(activity)}
+                                      aria-label={`Voir le document ${activity.document}`}
+                                    >
                                       <Eye className="h-4 w-4" />
                                     </Button>
                                   </TooltipTrigger>
@@ -295,7 +368,29 @@ const History = () => {
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button variant="outline" size="icon" aria-label={`Télécharger le document ${activity.document}`}>
+                                    <Button 
+                                      variant="outline" 
+                                      size="icon"
+                                      onClick={() => handleCopyLink(activity.id)}
+                                      aria-label={`Copier le lien du document ${activity.document}`}
+                                    >
+                                      <Copy className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Copier le lien</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="outline" 
+                                      size="icon" 
+                                      aria-label={`Télécharger le document ${activity.document}`}
+                                    >
                                       <Download className="h-4 w-4" />
                                     </Button>
                                   </TooltipTrigger>
@@ -327,6 +422,12 @@ const History = () => {
           </Card>
         </div>
       </div>
+
+      <DocumentDetails 
+        document={selectedDocument}
+        isOpen={documentDetailsOpen}
+        onClose={handleCloseDocumentDetails}
+      />
     </AppLayout>
   );
 };
