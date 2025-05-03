@@ -61,7 +61,8 @@ const demoUsers = [
     role: 'admin',
     department: 'Administration',
     lastActive: '2025-04-30',
-    status: 'active'
+    status: 'active',
+    avatar: '' // Added avatar property
   },
   {
     id: 8,
@@ -70,7 +71,8 @@ const demoUsers = [
     role: 'accueil',
     department: 'Accueil',
     lastActive: '2025-05-02',
-    status: 'active'
+    status: 'active',
+    avatar: '' // Added avatar property
   },
   {
     id: 9,
@@ -79,7 +81,8 @@ const demoUsers = [
     role: 'responsable_technique',
     department: 'Technique',
     lastActive: '2025-05-01',
-    status: 'active'
+    status: 'active',
+    avatar: '' // Added avatar property
   },
   {
     id: 10,
@@ -88,7 +91,8 @@ const demoUsers = [
     role: 'laboratoire',
     department: 'Laboratoire',
     lastActive: '2025-04-25',
-    status: 'active'
+    status: 'active',
+    avatar: '' // Added avatar property
   },
   {
     id: 11,
@@ -97,7 +101,8 @@ const demoUsers = [
     role: 'chef_inspections',
     department: 'Inspections',
     lastActive: '2025-04-29',
-    status: 'active'
+    status: 'active',
+    avatar: '' // Added avatar property
   },
   {
     id: 12,
@@ -106,7 +111,8 @@ const demoUsers = [
     role: 'directeur_evaluation',
     department: 'Évaluation',
     lastActive: '2025-04-28',
-    status: 'active'
+    status: 'active',
+    avatar: '' // Added avatar property
   }
 ];
 

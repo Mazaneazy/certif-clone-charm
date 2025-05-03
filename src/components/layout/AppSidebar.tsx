@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -26,7 +25,7 @@ import {
   BadgeCheck,
   FileSearch,
   Calculator,
-  Flask,
+  TestTube, // Replaced Flask with TestTube
   FileInput,
   ClipboardCheck,
   Building
@@ -70,7 +69,7 @@ const AppSidebar = () => {
     {
       title: "Paramètres de test",
       path: "/test-parameters",
-      icon: Flask,
+      icon: TestTube,
       permission: "manage_test_parameters",
       ariaLabel: "Gérer les paramètres de test"
     },
