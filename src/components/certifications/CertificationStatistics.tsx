@@ -150,7 +150,6 @@ const CertificationStatistics: React.FC<CertificationStatisticsProps> = ({ certi
                   />
                   <Bar
                     dataKey="value"
-                    nameKey="name"
                     label={{ position: 'right', formatter: (value: number) => value }}
                   >
                     {typeData.slice(0, 5).map((entry, index) => (
