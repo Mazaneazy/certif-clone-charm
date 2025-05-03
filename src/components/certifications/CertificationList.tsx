@@ -54,6 +54,11 @@ const CertificationList: React.FC<CertificationListProps> = ({
   const currentCertifications = certifications.slice(indexOfFirstCertification, indexOfLastCertification);
   const totalPages = Math.ceil(certifications.length / certificationsPerPage);
 
+  // Helper function to handle page changes
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
   return (
     <>
       {currentCertifications.length > 0 ? (
@@ -76,7 +81,7 @@ const CertificationList: React.FC<CertificationListProps> = ({
                     href="#" 
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage(prev => Math.max(prev - 1, 1));
+                      handlePageChange(Math.max(currentPage - 1, 1));
                     }}
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                   />
@@ -97,7 +102,7 @@ const CertificationList: React.FC<CertificationListProps> = ({
                           isActive={pageNumber === currentPage}
                           onClick={(e) => {
                             e.preventDefault();
-                            setCurrentPage(pageNumber);
+                            handlePageChange(pageNumber);
                           }}
                         >
                           {pageNumber}
@@ -122,7 +127,7 @@ const CertificationList: React.FC<CertificationListProps> = ({
                     href="#" 
                     onClick={(e) => {
                       e.preventDefault();
-                      setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                      handlePageChange(Math.min(currentPage + 1, totalPages));
                     }}
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                   />
