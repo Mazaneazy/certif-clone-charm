@@ -21,6 +21,7 @@ import Payments from "./pages/Payments";
 import Users from "./pages/Users";
 import Reports from "./pages/Reports";
 import Notifications from "./pages/Notifications";
+import Companies from "./pages/Companies";
 
 // Nouvelles pages
 import CertificationRequest from "./pages/CertificationRequest";
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/companies" element={<Companies />} />
             
             {/* Nouvelles routes */}
             <Route path="/certification-request" element={<CertificationRequest />} />
