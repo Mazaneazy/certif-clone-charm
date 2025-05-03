@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -23,9 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import CertificationCard from '@/components/certifications/CertificationCard';
 import CertificationDetails from '@/components/certifications/CertificationDetails';
 import ExportCertificationsButton from '@/components/certifications/ExportCertificationsButton';
+import CertificationStatistics from '@/components/certifications/CertificationStatistics';
 
 const Certifications = () => {
   const { toast } = useToast();
@@ -33,6 +39,7 @@ const Certifications = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeTab, setActiveTab] = useState('liste');
   const [selectedCertification, setSelectedCertification] = useState<null | {
     id: number;
     title: string;
@@ -194,7 +201,7 @@ const Certifications = () => {
       ]
     },
   ];
-
+  
   const handleCreateCertification = () => {
     toast({
       title: "Fonctionnalité à venir",
@@ -253,131 +260,144 @@ const Certifications = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Rechercher une certification..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
-              }}
-            />
-          </div>
-          <Select 
-            onValueChange={(value) => {
-              setStatusFilter(value);
-              setCurrentPage(1); // Reset to first page on filter change
-            }} 
-            defaultValue="all"
-          >
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Statut" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous</SelectItem>
-              <SelectItem value="valid">Valide</SelectItem>
-              <SelectItem value="expired">Expiré</SelectItem>
-              <SelectItem value="pending">En attente</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {currentCertifications.length > 0 ? (
-          <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {currentCertifications.map((cert) => (
-                <CertificationCard 
-                  key={cert.id} 
-                  certification={cert} 
-                  onClick={() => viewCertificationDetails(cert)}
+        <Tabs defaultValue="liste" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="liste">Liste des certifications</TabsTrigger>
+            <TabsTrigger value="statistiques">Statistiques</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="liste" className="space-y-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher une certification..."
+                  className="pl-10"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1); // Reset to first page on search
+                  }}
                 />
-              ))}
+              </div>
+              <Select 
+                onValueChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1); // Reset to first page on filter change
+                }} 
+                defaultValue="all"
+              >
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous</SelectItem>
+                  <SelectItem value="valid">Valide</SelectItem>
+                  <SelectItem value="expired">Expiré</SelectItem>
+                  <SelectItem value="pending">En attente</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            
-            {totalPages > 1 && (
-              <Pagination className="mt-6">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      href="#" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(prev => Math.max(prev - 1, 1));
-                      }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+
+            {currentCertifications.length > 0 ? (
+              <>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {currentCertifications.map((cert) => (
+                    <CertificationCard 
+                      key={cert.id} 
+                      certification={cert} 
+                      onClick={() => viewCertificationDetails(cert)}
                     />
-                  </PaginationItem>
-                  
-                  {Array.from({ length: totalPages }).map((_, index) => {
-                    const pageNumber = index + 1;
-                    // Show first page, last page, and pages around current page
-                    if (
-                      pageNumber === 1 || 
-                      pageNumber === totalPages ||
-                      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                    ) {
-                      return (
-                        <PaginationItem key={pageNumber}>
-                          <PaginationLink 
-                            href="#" 
-                            isActive={pageNumber === currentPage}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setCurrentPage(pageNumber);
-                            }}
-                          >
-                            {pageNumber}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    } else if (
-                      (pageNumber === 2 && currentPage > 3) ||
-                      (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
-                    ) {
-                      return (
-                        <PaginationItem key={pageNumber}>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      );
-                    }
-                    return null;
-                  })}
-                  
-                  <PaginationItem>
-                    <PaginationNext 
-                      href="#" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(prev => Math.min(prev + 1, totalPages));
-                      }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                  ))}
+                </div>
+                
+                {totalPages > 1 && (
+                  <Pagination className="mt-6">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(prev => Math.max(prev - 1, 1));
+                          }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: totalPages }).map((_, index) => {
+                        const pageNumber = index + 1;
+                        // Show first page, last page, and pages around current page
+                        if (
+                          pageNumber === 1 || 
+                          pageNumber === totalPages ||
+                          (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                        ) {
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationLink 
+                                href="#" 
+                                isActive={pageNumber === currentPage}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setCurrentPage(pageNumber);
+                                }}
+                              >
+                                {pageNumber}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        } else if (
+                          (pageNumber === 2 && currentPage > 3) ||
+                          (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
+                        ) {
+                          return (
+                            <PaginationItem key={pageNumber}>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
+                        return null;
+                      })}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                          }}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
+              </>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-10">
+                  <FileCheck className="h-10 w-10 text-muted-foreground mb-4" />
+                  <h3 className="text-xl font-medium mb-2">Aucune certification trouvée</h3>
+                  <p className="text-muted-foreground text-center mb-6">
+                    Aucune certification ne correspond à vos critères de recherche.
+                  </p>
+                  <Button variant="outline" onClick={() => {
+                    setSearchQuery('');
+                    setStatusFilter('all');
+                    setCurrentPage(1);
+                  }}>
+                    Réinitialiser les filtres
+                  </Button>
+                </CardContent>
+              </Card>
             )}
-          </>
-        ) : (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-10">
-              <FileCheck className="h-10 w-10 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-medium mb-2">Aucune certification trouvée</h3>
-              <p className="text-muted-foreground text-center mb-6">
-                Aucune certification ne correspond à vos critères de recherche.
-              </p>
-              <Button variant="outline" onClick={() => {
-                setSearchQuery('');
-                setStatusFilter('all');
-                setCurrentPage(1);
-              }}>
-                Réinitialiser les filtres
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+          </TabsContent>
+          
+          <TabsContent value="statistiques">
+            <CertificationStatistics certifications={certifications} />
+          </TabsContent>
+        </Tabs>
       </div>
       
       <CertificationDetails 
