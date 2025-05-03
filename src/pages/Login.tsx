@@ -132,10 +132,15 @@ const Login = () => {
               <Copy className="h-3.5 w-3.5 text-anor-blue" />
             </Button>
           </div>
-          <div className="grid grid-cols-1 gap-2 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
             {[
               'admin@anor.cm',
               'gestionnaire@anor.cm',
+              'accueil@anor.cm',
+              'technique@anor.cm',
+              'laboratoire@anor.cm',
+              'inspections@anor.cm',
+              'evaluations@anor.cm',
               'inspecteur@anor.cm',
               'responsable@anor.cm',
               'directeur@anor.cm',

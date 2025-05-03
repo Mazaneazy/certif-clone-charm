@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: 'Pierre Technique',
           email: 'responsable@anor.cm',
           role: 'responsable_technique',
-          permissions: ['review_certifications', 'manage_standards', 'view_reports'],
+          permissions: ['review_certifications', 'manage_standards', 'view_reports', 'manage_test_parameters', 'view_all_requests'],
           department: 'Technique'
         },
         'directeur@anor.cm': {
@@ -109,6 +109,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: 'producteur',
           permissions: ['view_own_certifications', 'submit_applications'],
           department: null
+        },
+        // Nouveaux comptes utilisateurs
+        'accueil@anor.cm': {
+          id: 8,
+          name: 'Réception ANOR',
+          email: 'accueil@anor.cm',
+          role: 'accueil',
+          permissions: ['register_requests', 'view_all_requests'],
+          department: 'Accueil'
+        },
+        'technique@anor.cm': {
+          id: 9,
+          name: 'Resp. Technique',
+          email: 'technique@anor.cm',
+          role: 'responsable_technique',
+          permissions: ['view_all_requests', 'manage_test_parameters', 'assign_laboratories', 'review_reports'],
+          department: 'Technique'
+        },
+        'laboratoire@anor.cm': {
+          id: 10,
+          name: 'Laboratoire Tests',
+          email: 'laboratoire@anor.cm',
+          role: 'laboratoire',
+          permissions: ['upload_test_results', 'view_assigned_tests'],
+          department: 'Laboratoire'
+        },
+        'inspections@anor.cm': {
+          id: 11,
+          name: 'Chef Inspections',
+          email: 'inspections@anor.cm',
+          role: 'chef_inspections',
+          permissions: ['assign_inspectors', 'manage_inspections', 'view_all_requests'],
+          department: 'Inspections'
+        },
+        'evaluations@anor.cm': {
+          id: 12,
+          name: 'Dir. Évaluation',
+          email: 'evaluations@anor.cm',
+          role: 'directeur_evaluation',
+          permissions: ['make_final_decisions', 'view_all_requests', 'view_all_reports'],
+          department: 'Évaluation'
         }
       };
       

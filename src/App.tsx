@@ -22,6 +22,12 @@ import Users from "./pages/Users";
 import Reports from "./pages/Reports";
 import Notifications from "./pages/Notifications";
 
+// Nouvelles pages
+import CertificationRequest from "./pages/CertificationRequest";
+import CertificationRequests from "./pages/CertificationRequests";
+import TestParameters from "./pages/TestParameters";
+import FeesCalculation from "./pages/FeesCalculation";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -45,6 +51,13 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/notifications" element={<Notifications />} />
+            
+            {/* Nouvelles routes */}
+            <Route path="/certification-request" element={<CertificationRequest />} />
+            <Route path="/certification-requests" element={<CertificationRequests />} />
+            <Route path="/test-parameters" element={<TestParameters />} />
+            <Route path="/fees-calculation" element={<FeesCalculation />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

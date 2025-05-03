@@ -23,7 +23,13 @@ import {
   Users,
   CreditCard,
   BarChart,
-  BadgeCheck
+  BadgeCheck,
+  FileSearch,
+  Calculator,
+  Flask,
+  FileInput,
+  ClipboardCheck,
+  Building
 } from "lucide-react";
 import Logo from '../ui/Logo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,7 +43,7 @@ interface MenuItemType {
 }
 
 const AppSidebar = () => {
-  const { hasPermission } = useAuth();
+  const { hasPermission, user } = useAuth();
   const location = useLocation();
 
   const menuItems: MenuItemType[] = [
@@ -46,6 +52,34 @@ const AppSidebar = () => {
       path: "/",
       icon: Home,
       ariaLabel: "Accéder au tableau de bord"
+    },
+    {
+      title: "Nouvelle demande",
+      path: "/certification-request",
+      icon: FileInput,
+      permission: "register_requests",
+      ariaLabel: "Créer une nouvelle demande"
+    },
+    {
+      title: "Demandes",
+      path: "/certification-requests",
+      icon: FileSearch,
+      permission: "view_all_requests",
+      ariaLabel: "Voir les demandes de certification"
+    },
+    {
+      title: "Paramètres de test",
+      path: "/test-parameters",
+      icon: Flask,
+      permission: "manage_test_parameters",
+      ariaLabel: "Gérer les paramètres de test"
+    },
+    {
+      title: "Calcul des frais",
+      path: "/fees-calculation",
+      icon: Calculator,
+      permission: "manage_test_parameters",
+      ariaLabel: "Calculer les frais de certification"
     },
     {
       title: "Dossiers",
@@ -76,6 +110,13 @@ const AppSidebar = () => {
       ariaLabel: "Consulter les normes"
     },
     {
+      title: "Laboratoires",
+      path: "/laboratories",
+      icon: ClipboardCheck,
+      permission: "assign_laboratories",
+      ariaLabel: "Gérer les laboratoires"
+    },
+    {
       title: "Paiements",
       path: "/payments",
       icon: CreditCard,
@@ -88,6 +129,13 @@ const AppSidebar = () => {
       icon: Users,
       permission: "manage_users",
       ariaLabel: "Gérer les utilisateurs"
+    },
+    {
+      title: "Entreprises",
+      path: "/companies",
+      icon: Building,
+      permission: "view_all_requests",
+      ariaLabel: "Gérer les entreprises"
     },
     {
       title: "Rapports",
@@ -143,6 +191,15 @@ const AppSidebar = () => {
         <Logo />
       </SidebarHeader>
       <SidebarContent>
+        {user && (
+          <div className="px-3 py-2">
+            <div className="rounded-md bg-muted p-3 mb-3">
+              <div className="text-sm font-medium">{user.name}</div>
+              <div className="text-xs text-muted-foreground">{user.department || 'Externe'}</div>
+            </div>
+          </div>
+        )}
+        
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
