@@ -14,7 +14,8 @@ import {
 } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import Logo from '@/components/ui/Logo';
-import { Loader2, Info } from 'lucide-react';
+import { Loader2, Info, Copy, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,6 +23,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Si déjà authentifié, rediriger vers la page d'accueil
   if (isAuthenticated) {
@@ -41,6 +43,23 @@ const Login = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDemoLogin = (demoEmail: string) => {
+    setEmail(demoEmail);
+    setPassword('password');
+    toast({
+      title: "Compte de démonstration",
+      description: `Identifiants du compte ${demoEmail} prêts à être utilisés`,
+    });
+  };
+
+  const handleCopyPassword = () => {
+    navigator.clipboard.writeText('password');
+    toast({
+      title: "Copié !",
+      description: "Mot de passe copié dans le presse-papier",
+    });
   };
 
   return (
@@ -107,18 +126,41 @@ const Login = () => {
         <div className="p-6 pt-0 text-center">
           <div className="flex items-center justify-center mb-3 text-sm bg-blue-50 p-2 rounded-md">
             <Info className="h-4 w-4 mr-2 text-anor-blue" aria-hidden="true" />
-            <p className="text-sm font-medium text-anor-blue">Utilisateurs de démonstration</p>
+            <p className="text-sm font-medium text-anor-blue">Comptes de démonstration</p>
+            <Button variant="ghost" size="sm" className="ml-2 h-6 w-6 p-0" 
+              onClick={handleCopyPassword} title="Copier le mot de passe">
+              <Copy className="h-3.5 w-3.5 text-anor-blue" />
+            </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground bg-gray-50 p-3 rounded-md">
-            <div>admin@anor.cm</div>
-            <div>gestionnaire@anor.cm</div>
-            <div>inspecteur@anor.cm</div>
-            <div>responsable@anor.cm</div>
-            <div>directeur@anor.cm</div>
-            <div>comptable@anor.cm</div>
-            <div>producteur@anor.cm</div>
+          <div className="grid grid-cols-1 gap-2 text-xs">
+            {[
+              'admin@anor.cm',
+              'gestionnaire@anor.cm',
+              'inspecteur@anor.cm',
+              'responsable@anor.cm',
+              'directeur@anor.cm',
+              'comptable@anor.cm',
+              'producteur@anor.cm'
+            ].map((demoEmail) => (
+              <Button
+                key={demoEmail}
+                variant="outline"
+                size="sm"
+                className="h-8 text-left justify-start text-gray-700 hover:bg-blue-50 hover:text-anor-blue"
+                onClick={() => handleDemoLogin(demoEmail)}
+              >
+                <User className="h-3.5 w-3.5 mr-2" />
+                {demoEmail}
+              </Button>
+            ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-2">Mot de passe: "password" pour tous</p>
+          <div className="flex items-center justify-center mt-3 text-xs text-muted-foreground p-2 bg-gray-50 rounded-md">
+            <p>Mot de passe: <span className="font-medium">"password"</span> pour tous</p>
+            <Button variant="ghost" size="sm" className="ml-1 h-6 w-6 p-0" 
+              onClick={handleCopyPassword} title="Copier le mot de passe">
+              <Copy className="h-3.5 w-3.5" />
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
