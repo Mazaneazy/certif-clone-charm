@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import CertificationCard from '@/components/certifications/CertificationCard';
 import CertificationDetails from '@/components/certifications/CertificationDetails';
+import ExportCertificationsButton from '@/components/certifications/ExportCertificationsButton';
 
 const Certifications = () => {
   const { toast } = useToast();
@@ -239,10 +241,16 @@ const Certifications = () => {
             <h1 className="text-3xl font-bold tracking-tight">Certifications</h1>
             <p className="text-muted-foreground">Gestion des certifications et standards.</p>
           </div>
-          <Button onClick={handleCreateCertification} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 self-start sm:self-auto">
-            <PlusCircle className="h-4 w-4" />
-            <span>Nouvelle certification</span>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <ExportCertificationsButton 
+              certifications={filteredCertifications}
+              isDisabled={filteredCertifications.length === 0}
+            />
+            <Button onClick={handleCreateCertification} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 self-start sm:self-auto">
+              <PlusCircle className="h-4 w-4" />
+              <span>Nouvelle certification</span>
+            </Button>
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
