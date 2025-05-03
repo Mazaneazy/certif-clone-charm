@@ -28,6 +28,7 @@ import CertificationRequest from "./pages/CertificationRequest";
 import CertificationRequests from "./pages/CertificationRequests";
 import TestParameters from "./pages/TestParameters";
 import FeesCalculation from "./pages/FeesCalculation";
+import Laboratories from "./pages/Laboratories";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/certification-requests" element={<CertificationRequests />} />
             <Route path="/test-parameters" element={<TestParameters />} />
             <Route path="/fees-calculation" element={<FeesCalculation />} />
+            <Route path="/laboratories" element={<Laboratories />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
