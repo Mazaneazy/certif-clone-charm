@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,8 +30,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { CertificationRequest } from '@/types/auth';
 
-// Données de démonstration pour les demandes
-const demoRequests: CertificationRequest[] = [
+// Données initiales de démonstration
+const initialDemoRequests: CertificationRequest[] = [
   {
     id: 1,
     companyName: "SABC (Société Anonyme des Brasseries du Cameroun)",
@@ -99,6 +99,9 @@ const demoRequests: CertificationRequest[] = [
   }
 ];
 
+// Clé pour le stockage local
+const STORAGE_KEY = 'certification-requests';
+
 const CertificationRequests = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -106,9 +109,57 @@ const CertificationRequests = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState<CertificationRequest | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [requests, setRequests] = useState<CertificationRequest[]>([]);
+
+  // Charger les demandes au démarrage
+  useEffect(() => {
+    const storedRequests = localStorage.getItem(STORAGE_KEY);
+    if (storedRequests) {
+      try {
+        setRequests(JSON.parse(storedRequests));
+      } catch (error) {
+        console.error('Erreur lors du chargement des demandes:', error);
+        // Utiliser les données de démonstration en cas d'erreur
+        setRequests(initialDemoRequests);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDemoRequests));
+      }
+    } else {
+      // Initialiser avec les données de démonstration si aucune donnée n'est trouvée
+      setRequests(initialDemoRequests);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDemoRequests));
+    }
+
+    // Écouter les événements de storage pour mettre à jour en temps réel
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          setRequests(JSON.parse(e.newValue));
+        } catch (error) {
+          console.error('Erreur lors de la mise à jour des demandes:', error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Écouter l'événement personnalisé pour les mises à jour locales
+    const handleLocalUpdate = (e: CustomEvent) => {
+      if (e.detail) {
+        setRequests(e.detail);
+      }
+    };
+
+    window.addEventListener('certification-request-added', handleLocalUpdate as EventListener);
+
+    // Nettoyage
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('certification-request-added', handleLocalUpdate as EventListener);
+    };
+  }, []);
 
   // Filtrage des demandes
-  const filteredRequests = demoRequests.filter(req => {
+  const filteredRequests = requests.filter(req => {
     // Filtrage par statut
     if (statusFilter !== 'all' && req.status !== statusFilter) {
       return false;
@@ -155,6 +206,57 @@ const CertificationRequests = () => {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  // Fonction pour ajouter une nouvelle demande
+  // Cette fonction pourrait être utilisée par d'autres composants
+  const addCertificationRequest = (newRequest: Omit<CertificationRequest, 'id'>) => {
+    const storedRequests = localStorage.getItem(STORAGE_KEY);
+    let currentRequests: CertificationRequest[] = [];
+    
+    try {
+      currentRequests = storedRequests ? JSON.parse(storedRequests) : initialDemoRequests;
+    } catch (error) {
+      console.error('Erreur lors du chargement des demandes:', error);
+      currentRequests = initialDemoRequests;
+    }
+    
+    // Générer un nouvel ID (en production, cela serait géré par le backend)
+    const newId = currentRequests.length > 0 
+      ? Math.max(...currentRequests.map(r => r.id)) + 1 
+      : 1;
+      
+    const requestWithId: CertificationRequest = {
+      ...newRequest,
+      id: newId
+    };
+    
+    const updatedRequests = [...currentRequests, requestWithId];
+    
+    // Mettre à jour le stockage local
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRequests));
+    
+    // Émettre un événement personnalisé pour informer les autres instances
+    const event = new CustomEvent('certification-request-added', { 
+      detail: updatedRequests 
+    });
+    window.dispatchEvent(event);
+    
+    // Mettre à jour l'état local
+    setRequests(updatedRequests);
+    
+    return requestWithId;
+  };
+
+  // Exposer la fonction globalement pour permettre l'ajout depuis d'autres composants
+  React.useEffect(() => {
+    // @ts-ignore - Ajouter à window pour permettre l'accès global
+    window.addCertificationRequest = addCertificationRequest;
+    
+    return () => {
+      // @ts-ignore - Nettoyer lors du démontage
+      delete window.addCertificationRequest;
+    };
+  }, []);
 
   return (
     <AppLayout>
@@ -254,87 +356,87 @@ const CertificationRequests = () => {
             </Button>
           </div>
         )}
+
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+          <DialogContent className="sm:max-w-[625px]">
+            <DialogHeader>
+              <DialogTitle>Détails de la demande</DialogTitle>
+              <DialogDescription>
+                Informations complètes sur la demande de certification
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedRequest && (
+              <div className="space-y-6 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Entreprise</h4>
+                    <p className="text-base font-semibold">{selectedRequest.companyName}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Promoteur</h4>
+                    <p>{selectedRequest.promoterName}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Téléphone</h4>
+                    <p>{selectedRequest.phone}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Date d'enregistrement</h4>
+                    <p>{new Date(selectedRequest.registrationDate).toLocaleDateString('fr-FR')}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Statut</h4>
+                    <div>{getStatusBadge(selectedRequest.status)}</div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">ID</h4>
+                    <p>{selectedRequest.id}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Produits</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {selectedRequest.products.map((product, index) => (
+                      <li key={index}>{product}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Documents</h4>
+                  <div className="space-y-2">
+                    {Object.entries(selectedRequest.files).map(([key, filename]) => (
+                      filename && (
+                        <div key={key} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                          <span className="text-sm">
+                            {key === 'businessRegistry' && 'Registre de Commerce'}
+                            {key === 'taxpayerCard' && 'Carte de contribuable (NIU)'}
+                            {key === 'manufacturingProcess' && 'Processus de fabrication'}
+                            {key === 'rawMaterialCertificate' && 'Certificat matière première'}
+                            {key === 'staffList' && 'Liste du personnel'}
+                            {key === 'productsList' && 'Liste des produits'}
+                          </span>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDownloadFile(filename)}
+                            className="h-8"
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Télécharger
+                          </Button>
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
-
-      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="sm:max-w-[625px]">
-          <DialogHeader>
-            <DialogTitle>Détails de la demande</DialogTitle>
-            <DialogDescription>
-              Informations complètes sur la demande de certification
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedRequest && (
-            <div className="space-y-6 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Entreprise</h4>
-                  <p className="text-base font-semibold">{selectedRequest.companyName}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Promoteur</h4>
-                  <p>{selectedRequest.promoterName}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Téléphone</h4>
-                  <p>{selectedRequest.phone}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Date d'enregistrement</h4>
-                  <p>{new Date(selectedRequest.registrationDate).toLocaleDateString('fr-FR')}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Statut</h4>
-                  <div>{getStatusBadge(selectedRequest.status)}</div>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-1">ID</h4>
-                  <p>{selectedRequest.id}</p>
-                </div>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">Produits</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                  {selectedRequest.products.map((product, index) => (
-                    <li key={index}>{product}</li>
-                  ))}
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">Documents</h4>
-                <div className="space-y-2">
-                  {Object.entries(selectedRequest.files).map(([key, filename]) => (
-                    filename && (
-                      <div key={key} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                        <span className="text-sm">
-                          {key === 'businessRegistry' && 'Registre de Commerce'}
-                          {key === 'taxpayerCard' && 'Carte de contribuable (NIU)'}
-                          {key === 'manufacturingProcess' && 'Processus de fabrication'}
-                          {key === 'rawMaterialCertificate' && 'Certificat matière première'}
-                          {key === 'staffList' && 'Liste du personnel'}
-                          {key === 'productsList' && 'Liste des produits'}
-                        </span>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDownloadFile(filename)}
-                          className="h-8"
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          Télécharger
-                        </Button>
-                      </div>
-                    )
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </AppLayout>
   );
 };

@@ -1,55 +1,44 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { FileText, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { CertificationRequest } from '@/types/auth';
 
+// Définition du schéma de validation
 const formSchema = z.object({
-  companyName: z.string().min(3, {
-    message: "Le nom de l'entreprise doit comporter au moins 3 caractères",
-  }),
-  promoterName: z.string().min(3, {
-    message: "Le nom du promoteur doit comporter au moins 3 caractères",
-  }),
-  phone: z.string().min(9, {
-    message: "Le numéro de téléphone doit comporter au moins 9 chiffres",
-  }),
-  products: z.string().min(3, {
-    message: "Veuillez indiquer au moins un produit à certifier",
-  }),
+  companyName: z.string().min(2, { message: "Le nom de l'entreprise est requis" }),
+  promoterName: z.string().min(2, { message: "Le nom du promoteur est requis" }),
+  phone: z.string().min(8, { message: "Le numéro de téléphone est requis" }),
+  products: z.string().min(2, { message: "Au moins un produit est requis" }),
+  businessRegistry: z.string().optional(),
+  taxpayerCard: z.string().optional(),
+  manufacturingProcess: z.string().optional(),
+  rawMaterialCertificate: z.string().optional(),
+  staffList: z.string().optional(),
+  productsList: z.string().optional(),
 });
 
-const CertificationRequestPage = () => {
+const CertificationRequest = () => {
   const { toast } = useToast();
-  const [uploadedFiles, setUploadedFiles] = useState<{
-    [key: string]: File | null;
-  }>({
-    businessRegistry: null,
-    taxpayerCard: null,
-    manufacturingProcess: null,
-    rawMaterialCertificate: null,
-    staffList: null,
-    productsList: null,
-  });
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [existingCompanies] = useState<string[]>(['ACME Industries', 'TechCorp Cameroon', 'FoodPro SA']); // Simuler des entreprises existantes
 
+  // Initialisation du formulaire avec React Hook Form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,115 +46,77 @@ const CertificationRequestPage = () => {
       promoterName: "",
       phone: "",
       products: "",
+      businessRegistry: "",
+      taxpayerCard: "",
+      manufacturingProcess: "",
+      rawMaterialCertificate: "",
+      staffList: "",
+      productsList: "",
     },
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fileType: string) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      
-      // Vérifier si le fichier est un PDF
-      if (file.type !== 'application/pdf') {
-        toast({
-          title: "Format incorrect",
-          description: "Veuillez télécharger uniquement des fichiers PDF",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // Vérifier la taille du fichier (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "Fichier trop volumineux",
-          description: "La taille maximale autorisée est de 5 Mo",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setUploadedFiles(prev => ({ ...prev, [fileType]: file }));
-      
-      toast({
-        title: "Fichier téléchargé",
-        description: `Le fichier ${file.name} a été téléchargé avec succès.`,
-      });
-    }
-  };
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  // Gestionnaire de soumission du formulaire
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
-    
-    // Vérifier si le nom de l'entreprise existe déjà
-    if (existingCompanies.includes(values.companyName)) {
-      toast({
-        title: "Erreur de validation",
-        description: "Cette entreprise est déjà enregistrée dans le système.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-    
-    // Vérifier que les fichiers obligatoires sont présents
-    const requiredFiles = ['businessRegistry', 'taxpayerCard', 'manufacturingProcess', 'staffList', 'productsList'];
-    const missingFiles = requiredFiles.filter(fileType => !uploadedFiles[fileType]);
-    
-    if (missingFiles.length > 0) {
-      toast({
-        title: "Documents manquants",
-        description: "Veuillez télécharger tous les documents obligatoires.",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
+    try {
+      // Simulation d'un délai réseau
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Simuler une requête d'API
-    setTimeout(() => {
-      // Formater les produits comme un tableau
-      const productsList = values.products
-        .split(',')
-        .map(p => p.trim())
-        .filter(p => p.length > 0);
+      // Préparer les données de la demande
+      const products = values.products.split(',').map(p => p.trim());
+      const now = new Date().toISOString();
 
-      const newRequest: Partial<CertificationRequest> = {
+      const newRequest: Omit<CertificationRequest, 'id'> = {
         companyName: values.companyName,
         promoterName: values.promoterName,
         phone: values.phone,
-        products: productsList,
-        registrationDate: new Date().toISOString(),
-        status: 'pending',
+        products,
+        registrationDate: now,
+        status: "pending",
         files: {
-          businessRegistry: uploadedFiles.businessRegistry?.name,
-          taxpayerCard: uploadedFiles.taxpayerCard?.name,
-          manufacturingProcess: uploadedFiles.manufacturingProcess?.name,
-          rawMaterialCertificate: uploadedFiles.rawMaterialCertificate?.name,
-          staffList: uploadedFiles.staffList?.name,
-          productsList: uploadedFiles.productsList?.name,
+          businessRegistry: values.businessRegistry || undefined,
+          taxpayerCard: values.taxpayerCard || undefined,
+          manufacturingProcess: values.manufacturingProcess || undefined,
+          rawMaterialCertificate: values.rawMaterialCertificate || undefined,
+          staffList: values.staffList || undefined,
+          productsList: values.productsList || undefined
         }
       };
 
-      console.log("Nouvelle demande de certification:", newRequest);
+      // Log de la nouvelle demande pour débogage
+      console.info("Nouvelle demande de certification:", newRequest);
 
-      // Réinitialiser le formulaire après soumission
-      form.reset();
-      setUploadedFiles({
-        businessRegistry: null,
-        taxpayerCard: null,
-        manufacturingProcess: null,
-        rawMaterialCertificate: null,
-        staffList: null,
-        productsList: null,
-      });
+      // Vérifier si la fonction globale est disponible
+      // @ts-ignore - La fonction est ajoutée dynamiquement à window
+      if (typeof window.addCertificationRequest === 'function') {
+        // @ts-ignore - Appel de la fonction globale
+        const savedRequest = window.addCertificationRequest(newRequest);
+        
+        toast({
+          title: "Demande soumise",
+          description: `La demande de certification pour ${values.companyName} a été enregistrée avec succès.`,
+        });
 
+        // Rediriger vers la liste des demandes
+        navigate('/certification-requests');
+      } else {
+        // Fallback si la fonction n'est pas disponible
+        toast({
+          title: "Erreur",
+          description: "Impossible d'enregistrer la demande. Le système n'est pas disponible.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la soumission:", error);
       toast({
-        title: "Demande soumise avec succès",
-        description: "La demande de certification a été enregistrée.",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la soumission de la demande.",
+        variant: "destructive",
       });
-      
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -173,25 +124,22 @@ const CertificationRequestPage = () => {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Nouvelle Demande de Certification</h1>
-          <p className="text-muted-foreground">Enregistrement d'une nouvelle demande de certification</p>
+          <p className="text-muted-foreground">Formulaire de soumission d'une demande de certification</p>
         </div>
 
-        <div className="border rounded-lg p-6 bg-white shadow-sm">
+        <div className="border rounded-lg p-6 bg-white">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="companyName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom de l'entreprise*</FormLabel>
+                      <FormLabel>Nom de l'entreprise</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: ACME Industries" {...field} />
+                        <Input placeholder="Ex: SABC" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Nom légal complet de l'entreprise
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -202,13 +150,10 @@ const CertificationRequestPage = () => {
                   name="promoterName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom du promoteur*</FormLabel>
+                      <FormLabel>Nom du promoteur</FormLabel>
                       <FormControl>
                         <Input placeholder="Ex: Jean Dupont" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Nom complet du responsable de l'entreprise
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -219,13 +164,10 @@ const CertificationRequestPage = () => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Téléphone*</FormLabel>
+                      <FormLabel>Téléphone</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: 699123456" {...field} />
+                        <Input placeholder="Ex: 677123456" {...field} />
                       </FormControl>
-                      <FormDescription>
-                        Numéro de téléphone principal de contact
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -236,147 +178,128 @@ const CertificationRequestPage = () => {
                   name="products"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Produits à certifier*</FormLabel>
+                      <FormLabel>Produits (séparés par des virgules)</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Entrez les produits séparés par des virgules" 
-                          className="resize-none"
+                          placeholder="Ex: Bière 33 Export, Beaufort Lager, Castel Beer" 
                           {...field} 
                         />
                       </FormControl>
-                      <FormDescription>
-                        Liste des produits concernés par la demande de certification
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Documents requis (format PDF uniquement)</h3>
+              <div>
+                <h3 className="text-lg font-medium mb-4">Documents requis</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Dans un environnement réel, ces champs permettraient de télécharger des fichiers. 
+                  Pour cette démonstration, veuillez simplement indiquer le nom du fichier.
+                </p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Registre de Commerce*
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileChange(e, 'businessRegistry')}
-                        className="max-w-sm"
-                      />
-                      {uploadedFiles.businessRegistry && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="businessRegistry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Registre de commerce</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: registre_commerce.pdf" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Carte de contribuable (NIU)*
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileChange(e, 'taxpayerCard')}
-                        className="max-w-sm"
-                      />
-                      {uploadedFiles.taxpayerCard && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="taxpayerCard"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Carte de contribuable (NIU)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: niu.pdf" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Schéma du processus de fabrication*
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileChange(e, 'manufacturingProcess')}
-                        className="max-w-sm"
-                      />
-                      {uploadedFiles.manufacturingProcess && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="manufacturingProcess"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Processus de fabrication</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: processus.pdf" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Certificat de conformité de la matière première (optionnel)
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileChange(e, 'rawMaterialCertificate')}
-                        className="max-w-sm"
-                      />
-                      {uploadedFiles.rawMaterialCertificate && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="rawMaterialCertificate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Certificat matières premières (optionnel)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: matieres_premieres.pdf" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Liste du personnel (sur papier entête)*
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileChange(e, 'staffList')}
-                        className="max-w-sm"
-                      />
-                      {uploadedFiles.staffList && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="staffList"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Liste du personnel</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: personnel.pdf" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Liste des produits à certifier*
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => handleFileChange(e, 'productsList')}
-                        className="max-w-sm"
-                      />
-                      {uploadedFiles.productsList && (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                    </div>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="productsList"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Liste des produits</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ex: produits.pdf" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center gap-4">
-                <Button type="submit" className="bg-anor-blue hover:bg-blue-800" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                    <>
-                      <Upload className="mr-2 h-4 w-4 animate-spin" />
-                      Soumission en cours...
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="mr-2 h-4 w-4" />
-                      Enregistrer la demande
-                    </>
-                  )}
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => navigate('/certification-requests')}
+                  disabled={isSubmitting}
+                >
+                  Annuler
                 </Button>
-                <Button type="button" variant="outline" onClick={() => form.reset()}>
-                  Effacer
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {isSubmitting ? "Soumission en cours..." : "Soumettre la demande"}
                 </Button>
               </div>
             </form>
@@ -387,4 +310,4 @@ const CertificationRequestPage = () => {
   );
 };
 
-export default CertificationRequestPage;
+export default CertificationRequest;
