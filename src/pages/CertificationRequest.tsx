@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -9,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { addRequest } from '@/services/requestService';
 import {
   Form,
   FormControl,
@@ -86,11 +86,9 @@ const CertificationRequest = () => {
       // Log de la nouvelle demande pour débogage
       console.info("Nouvelle demande de certification:", newRequest);
 
-      // Vérifier si la fonction globale est disponible
-      // @ts-ignore - La fonction est ajoutée dynamiquement à window
-      if (typeof window.addCertificationRequest === 'function') {
-        // @ts-ignore - Appel de la fonction globale
-        const savedRequest = window.addCertificationRequest(newRequest);
+      // Utiliser directement le service d'ajout de demande
+      try {
+        const savedRequest = addRequest(newRequest);
         
         toast({
           title: "Demande soumise",
@@ -99,11 +97,11 @@ const CertificationRequest = () => {
 
         // Rediriger vers la liste des demandes
         navigate('/certification-requests');
-      } else {
-        // Fallback si la fonction n'est pas disponible
+      } catch (error) {
+        console.error("Erreur lors de la soumission:", error);
         toast({
           title: "Erreur",
-          description: "Impossible d'enregistrer la demande. Le système n'est pas disponible.",
+          description: "Une erreur est survenue lors de l'enregistrement de la demande.",
           variant: "destructive",
         });
       }

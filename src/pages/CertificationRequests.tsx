@@ -43,10 +43,26 @@ const CertificationRequests = () => {
 
     window.addEventListener('certification-request-added', handleLocalUpdate as EventListener);
 
+    // Exposer la fonction globalement pour permettre l'ajout depuis d'autres composants
+    // @ts-ignore - Ajouter à window pour permettre l'accès global
+    window.addCertificationRequest = (newRequest: Omit<CertificationRequest, 'id'>) => {
+      try {
+        const savedRequest = addRequest(newRequest);
+        // Mettre à jour l'état local pour une mise à jour immédiate
+        setRequests(getRequests());
+        return savedRequest;
+      } catch (error) {
+        console.error("Erreur lors de l'ajout de la demande:", error);
+        throw error;
+      }
+    };
+
     // Nettoyage
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('certification-request-added', handleLocalUpdate as EventListener);
+      // @ts-ignore - Nettoyer lors du démontage
+      delete window.addCertificationRequest;
     };
   }, []);
 
@@ -62,19 +78,6 @@ const CertificationRequests = () => {
     setSearchQuery('');
     setStatusFilter('all');
   };
-
-  // Exposer la fonction globalement pour permettre l'ajout depuis d'autres composants
-  useEffect(() => {
-    // @ts-ignore - Ajouter à window pour permettre l'accès global
-    window.addCertificationRequest = (newRequest: Omit<CertificationRequest, 'id'>) => {
-      return addRequest(newRequest);
-    };
-    
-    return () => {
-      // @ts-ignore - Nettoyer lors du démontage
-      delete window.addCertificationRequest;
-    };
-  }, []);
 
   return (
     <AppLayout>
