@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { CertificationRequest } from '@/types/auth';
+import type { CertificationRequest as CertRequestType } from '@/types/auth';
 
 // Définition du schéma de validation
 const formSchema = z.object({
@@ -66,7 +66,7 @@ const CertificationRequest = () => {
       const products = values.products.split(',').map(p => p.trim());
       const now = new Date().toISOString();
 
-      const newRequest: Omit<CertificationRequest, 'id'> = {
+      const newRequest: Omit<CertRequestType, 'id'> = {
         companyName: values.companyName,
         promoterName: values.promoterName,
         phone: values.phone,
