@@ -34,51 +34,67 @@ import { CertificationRequest } from '@/types/auth';
 const demoRequests: CertificationRequest[] = [
   {
     id: 1,
-    companyName: "TechCorp Cameroon",
-    promoterName: "Jean Mbarga",
+    companyName: "SABC (Société Anonyme des Brasseries du Cameroun)",
+    promoterName: "Rodrigue Fotso",
     phone: "699123456",
-    products: ["Ordinateurs portables", "Tablettes"],
+    products: ["Bière 33 Export", "Beaufort Lager", "Castel Beer"],
     registrationDate: "2025-01-15",
     status: "in_process",
     files: {
-      businessRegistry: "registre_commerce_techcorp.pdf",
-      taxpayerCard: "niu_techcorp.pdf",
-      manufacturingProcess: "processus_techcorp.pdf",
-      staffList: "personnel_techcorp.pdf",
-      productsList: "produits_techcorp.pdf"
+      businessRegistry: "registre_commerce_sabc.pdf",
+      taxpayerCard: "niu_sabc.pdf",
+      manufacturingProcess: "processus_sabc.pdf",
+      staffList: "personnel_sabc.pdf",
+      productsList: "produits_sabc.pdf"
     }
   },
   {
     id: 2,
-    companyName: "FoodPro SA",
-    promoterName: "Marie Nkolo",
+    companyName: "SOSUCAM (Société Sucrière du Cameroun)",
+    promoterName: "Aminata Tchoungui",
     phone: "677889900",
-    products: ["Jus de fruits", "Conserves"],
+    products: ["Sucre blanc en morceaux", "Sucre roux", "Sucre en poudre"],
     registrationDate: "2025-02-20",
     status: "pending",
     files: {
-      businessRegistry: "registre_commerce_foodpro.pdf",
-      taxpayerCard: "niu_foodpro.pdf",
-      manufacturingProcess: "processus_foodpro.pdf",
-      rawMaterialCertificate: "matieres_premieres_foodpro.pdf",
-      staffList: "personnel_foodpro.pdf",
-      productsList: "produits_foodpro.pdf"
+      businessRegistry: "registre_commerce_sosucam.pdf",
+      taxpayerCard: "niu_sosucam.pdf",
+      manufacturingProcess: "processus_sosucam.pdf",
+      rawMaterialCertificate: "matieres_premieres_sosucam.pdf",
+      staffList: "personnel_sosucam.pdf",
+      productsList: "produits_sosucam.pdf"
     }
   },
   {
     id: 3,
-    companyName: "ACME Industries",
-    promoterName: "Paul Tamba",
+    companyName: "CHOCOCAM (Chocolaterie Confiserie du Cameroun)",
+    promoterName: "Paul Essomba",
     phone: "654321987",
-    products: ["Pièces métalliques", "Outils industriels"],
+    products: ["Chocolat Mambo", "Bonbons Wick's", "Caramels Kola"],
     registrationDate: "2025-03-05",
     status: "approved",
     files: {
-      businessRegistry: "registre_commerce_acme.pdf",
-      taxpayerCard: "niu_acme.pdf",
-      manufacturingProcess: "processus_acme.pdf",
-      staffList: "personnel_acme.pdf",
-      productsList: "produits_acme.pdf"
+      businessRegistry: "registre_commerce_chococam.pdf",
+      taxpayerCard: "niu_chococam.pdf",
+      manufacturingProcess: "processus_chococam.pdf",
+      staffList: "personnel_chococam.pdf",
+      productsList: "produits_chococam.pdf"
+    }
+  },
+  {
+    id: 4,
+    companyName: "CICAM (Cotonnière Industrielle du Cameroun)",
+    promoterName: "Jacqueline Koung",
+    phone: "691234567",
+    products: ["Pagne écru", "Tissus imprimés", "Serviettes"],
+    registrationDate: "2025-03-20",
+    status: "corrective_actions",
+    files: {
+      businessRegistry: "registre_commerce_cicam.pdf",
+      taxpayerCard: "niu_cicam.pdf",
+      manufacturingProcess: "processus_cicam.pdf",
+      staffList: "personnel_cicam.pdf",
+      productsList: "produits_cicam.pdf"
     }
   }
 ];

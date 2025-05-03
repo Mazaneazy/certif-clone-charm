@@ -17,26 +17,42 @@ import {
 const demoCompanies = [
   {
     id: 1,
-    name: "TechCorp Cameroon",
-    contactName: "Jean Mbarga",
+    name: "SABC (Société Anonyme des Brasseries du Cameroun)",
+    contactName: "Rodrigue Fotso",
     phone: "699123456",
-    email: "techcorp@example.com",
+    email: "rodrigue.fotso@sabc.cm",
     status: "active"
   },
   {
     id: 2,
-    name: "FoodPro SA",
-    contactName: "Marie Nkolo",
+    name: "SOSUCAM (Société Sucrière du Cameroun)",
+    contactName: "Aminata Tchoungui",
     phone: "677889900",
-    email: "foodpro@example.com",
+    email: "aminata.tchoungui@sosucam.cm",
     status: "active"
   },
   {
     id: 3,
-    name: "ACME Industries",
-    contactName: "Paul Tamba",
+    name: "CHOCOCAM (Chocolaterie Confiserie du Cameroun)",
+    contactName: "Paul Essomba",
     phone: "654321987",
-    email: "acme@example.com",
+    email: "paul.essomba@chococam.cm",
+    status: "inactive"
+  },
+  {
+    id: 4,
+    name: "CICAM (Cotonnière Industrielle du Cameroun)",
+    contactName: "Jacqueline Koung",
+    phone: "691234567",
+    email: "jacqueline.koung@cicam.cm",
+    status: "active"
+  },
+  {
+    id: 5,
+    name: "CINPHARM (Compagnie Industrielle Pharmaceutique)",
+    contactName: "Michel Ekani",
+    phone: "677654321",
+    email: "michel.ekani@cinpharm.cm",
     status: "inactive"
   }
 ];
