@@ -1,12 +1,35 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import AddLaboratoryForm from '@/components/laboratories/AddLaboratoryForm';
+import { useToast } from '@/hooks/use-toast';
 
 const Laboratories = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleSubmitForm = (data: any) => {
+    console.log('Form submitted with:', data);
+    toast({
+      title: "Laboratoire ajouté",
+      description: `Le laboratoire ${data.name} a été ajouté avec succès.`,
+    });
+    setIsDialogOpen(false);
+  };
+
   return (
     <AppLayout requiredPermission="assign_laboratories">
       <div className="flex flex-col gap-4">
@@ -17,10 +40,22 @@ const Laboratories = () => {
               Gérez les laboratoires partenaires pour les tests de certification.
             </p>
           </div>
-          <Button className="bg-anor-blue hover:bg-anor-blue/90">
+          <Button 
+            className="bg-anor-blue hover:bg-anor-blue/90"
+            onClick={handleOpenDialog}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Ajouter un laboratoire
           </Button>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Ajouter un laboratoire</DialogTitle>
+              </DialogHeader>
+              <AddLaboratoryForm onSubmit={handleSubmitForm} onCancel={handleCloseDialog} />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Tabs defaultValue="accredited" className="w-full">
