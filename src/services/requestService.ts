@@ -1,6 +1,6 @@
 
 import { CertificationRequest } from '@/types/auth';
-import { WorkflowStatus } from '@/types/workflow';
+import { WorkflowStatus, CommentItem } from '@/types/workflow';
 import { executeWorkflowAction } from './workflowService';
 
 // Clé pour le stockage local
@@ -37,6 +37,26 @@ const initialDemoRequests: CertificationRequest[] = [
         comment: "Dossier en cours d'évaluation technique" 
       }
     ],
+    comments: [
+      {
+        id: "1",
+        userId: 2,
+        userName: "Marie Ekomo",
+        userRole: "Gestionnaire des Dossiers",
+        text: "Tous les documents sont conformes. Le dossier est transmis au service technique.",
+        timestamp: "2025-01-20T10:30:00.000Z",
+        isInternal: false
+      },
+      {
+        id: "2",
+        userId: 3,
+        userName: "Paul Biya",
+        userRole: "Responsable Technique",
+        text: "À noter: cette entreprise a déjà obtenu d'autres certifications pour des produits similaires.",
+        timestamp: "2025-01-25T14:45:00.000Z",
+        isInternal: true
+      }
+    ],
     files: {
       businessRegistry: "registre_commerce_sabc.pdf",
       taxpayerCard: "niu_sabc.pdf",
@@ -62,6 +82,7 @@ const initialDemoRequests: CertificationRequest[] = [
         comment: "Demande reçue, en attente d'analyse" 
       }
     ],
+    comments: [],
     files: {
       businessRegistry: "registre_commerce_sosucam.pdf",
       taxpayerCard: "niu_sosucam.pdf",
@@ -136,6 +157,35 @@ const initialDemoRequests: CertificationRequest[] = [
         comment: "Processus de certification terminé" 
       }
     ],
+    comments: [
+      {
+        id: "3",
+        userId: 1,
+        userName: "Jean Onana",
+        userRole: "Service d'Accueil",
+        text: "Dossier complet reçu le 5 mars 2025.",
+        timestamp: "2025-03-05T09:15:00.000Z",
+        isInternal: false
+      },
+      {
+        id: "4",
+        userId: 5,
+        userName: "Elvire Simo",
+        userRole: "Chef des Inspections",
+        text: "L'inspection s'est très bien déroulée. L'entreprise est bien organisée et respecte les normes.",
+        timestamp: "2025-03-20T16:20:00.000Z",
+        isInternal: false
+      },
+      {
+        id: "5",
+        userId: 6,
+        userName: "Roger Milla",
+        userRole: "Laboratoire",
+        text: "Les échantillons ont passé tous les tests avec succès.",
+        timestamp: "2025-03-25T11:30:00.000Z",
+        isInternal: false
+      }
+    ],
     files: {
       businessRegistry: "registre_commerce_chococam.pdf",
       taxpayerCard: "niu_chococam.pdf",
@@ -171,6 +221,26 @@ const initialDemoRequests: CertificationRequest[] = [
         status: "reception", 
         user: "Marie Ekomo", 
         comment: "Demande de compléments d'information" 
+      }
+    ],
+    comments: [
+      {
+        id: "6",
+        userId: 2,
+        userName: "Marie Ekomo",
+        userRole: "Gestionnaire des Dossiers",
+        text: "Le certificat d'origine des matières premières est manquant. Veuillez le fournir pour poursuivre l'évaluation.",
+        timestamp: "2025-03-25T15:45:00.000Z",
+        isInternal: false
+      },
+      {
+        id: "7",
+        userId: 2,
+        userName: "Marie Ekomo",
+        userRole: "Gestionnaire des Dossiers",
+        text: "À surveiller de près, cette entreprise a déjà eu des problèmes de documentation dans le passé.",
+        timestamp: "2025-03-25T15:50:00.000Z",
+        isInternal: true
       }
     ],
     files: {
@@ -223,6 +293,7 @@ export const addRequest = (newRequest: Omit<CertificationRequest, 'id'>): Certif
     ...newRequest,
     id: newId,
     workflowStatus: 'reception' as WorkflowStatus,
+    comments: [],
     workflowHistory: [{
       date: new Date().toISOString(),
       status: 'reception',
@@ -290,6 +361,33 @@ export const updateWorkflowStatus = (
     status: requestStatus,
     workflowStatus: newStatus as WorkflowStatus,
     workflowHistory: [...(request.workflowHistory || []), historyEntry]
+  };
+  
+  // Mettre à jour la liste des demandes
+  requests[requestIndex] = updatedRequest;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+  
+  return updatedRequest;
+};
+
+// Ajouter un commentaire à une demande
+export const addCommentToRequest = (
+  requestId: number,
+  comment: CommentItem
+): CertificationRequest => {
+  const requests = getRequests();
+  const requestIndex = requests.findIndex(r => r.id === requestId);
+  
+  if (requestIndex === -1) {
+    throw new Error(`Demande non trouvée: ${requestId}`);
+  }
+  
+  const request = requests[requestIndex];
+  
+  // Ajouter le commentaire
+  const updatedRequest: CertificationRequest = {
+    ...request,
+    comments: [...(request.comments || []), comment]
   };
   
   // Mettre à jour la liste des demandes

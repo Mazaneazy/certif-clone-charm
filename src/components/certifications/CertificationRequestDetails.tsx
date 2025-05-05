@@ -17,8 +17,12 @@ import { CertificationRequest } from '@/types/auth';
 import WorkflowStepper from './WorkflowStepper';
 import WorkflowActions from './WorkflowActions';
 import WorkflowHistory from './WorkflowHistory';
+import CommentSection from './CommentSection';
 import { getWorkflowSteps, workflowActions } from '@/services/workflowService';
-import { updateWorkflowStatus } from '@/services/requestService';
+import { updateWorkflowStatus, addCommentToRequest } from '@/services/requestService';
+import { CommentItem } from '@/types/workflow';
+import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CertificationRequestDetailsProps {
   isOpen: boolean;
@@ -34,6 +38,7 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
   onRequestUpdated
 }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('details');
   const [updatedRequest, setUpdatedRequest] = useState<CertificationRequest | null>(selectedRequest);
 
@@ -67,7 +72,7 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
   };
 
   const handlePerformAction = (actionId: string, comment?: string) => {
-    if (!selectedRequest) return;
+    if (!selectedRequest || !user) return;
 
     try {
       // Mettre à jour le statut du workflow
@@ -95,6 +100,44 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
     }
   };
 
+  const handleAddComment = (text: string, isInternal: boolean) => {
+    if (!updatedRequest || !user) return;
+
+    try {
+      const newComment: CommentItem = {
+        id: uuidv4(),
+        userId: user.id,
+        userName: user.name,
+        userRole: getUserRoleName(user.role),
+        text,
+        timestamp: new Date().toISOString(),
+        isInternal
+      };
+
+      const updated = addCommentToRequest(updatedRequest.id, newComment);
+      setUpdatedRequest(updated);
+      
+      if (onRequestUpdated) {
+        onRequestUpdated(updated);
+      }
+
+      toast({
+        title: "Commentaire ajouté",
+        description: isInternal 
+          ? "Votre commentaire interne a été ajouté avec succès" 
+          : "Votre commentaire a été ajouté avec succès",
+      });
+
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du commentaire:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'ajout du commentaire.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Si aucune demande n'est sélectionnée, ne rien afficher
   if (!updatedRequest) {
     return null;
@@ -113,9 +156,10 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid grid-cols-3 mb-4">
+          <TabsList className="grid grid-cols-4 mb-4">
             <TabsTrigger value="details">Détails</TabsTrigger>
             <TabsTrigger value="workflow">Workflow</TabsTrigger>
+            <TabsTrigger value="comments">Commentaires</TabsTrigger>
             <TabsTrigger value="history">Historique</TabsTrigger>
           </TabsList>
           
@@ -198,6 +242,13 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
             </div>
           </TabsContent>
           
+          <TabsContent value="comments" className="space-y-6">
+            <CommentSection 
+              comments={updatedRequest.comments || []}
+              onAddComment={handleAddComment}
+            />
+          </TabsContent>
+          
           <TabsContent value="history" className="space-y-6">
             <WorkflowHistory history={updatedRequest.workflowHistory || []} />
           </TabsContent>
@@ -211,6 +262,26 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
       </DialogContent>
     </Dialog>
   );
+};
+
+// Fonction pour obtenir le nom convivial du rôle de l'utilisateur
+const getUserRoleName = (role: string): string => {
+  const roleNames: Record<string, string> = {
+    'accueil': "Service d'Accueil",
+    'gestionnaire': "Gestionnaire des Dossiers",
+    'responsable_technique': "Responsable Technique",
+    'chef_comite': "Chef de Comité Technique",
+    'directeur_evaluation': "Directeur de l'Évaluation",
+    'chef_inspections': "Chef des Inspections",
+    'inspecteur': "Inspecteur",
+    'laboratoire': "Laboratoire",
+    'comptable': "Service Comptabilité",
+    'producteur': "Opérateur Économique",
+    'admin': "Administrateur",
+    'directeur': "Directeur Général"
+  };
+  
+  return roleNames[role] || role;
 };
 
 export default CertificationRequestDetails;

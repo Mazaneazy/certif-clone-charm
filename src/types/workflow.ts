@@ -31,3 +31,13 @@ export interface WorkflowAction {
   requiresComment?: boolean;
   requiresDocument?: boolean;
 }
+
+export interface CommentItem {
+  id: string;
+  userId: number;
+  userName: string;
+  userRole: string;
+  text: string;
+  timestamp: string;
+  isInternal: boolean;  // Pour distinguer les commentaires internes vs. ceux visibles par l'opérateur
+}

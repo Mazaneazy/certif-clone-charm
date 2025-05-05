@@ -1,5 +1,17 @@
 
-export type UserRole = 'admin' | 'gestionnaire' | 'inspecteur' | 'responsable_technique' | 'directeur' | 'comptable' | 'producteur' | 'accueil' | 'chef_inspections' | 'laboratoire' | 'directeur_evaluation';
+export type UserRole = 
+  | 'admin' 
+  | 'accueil'               // Réception des dossiers
+  | 'gestionnaire'          // Gestionnaire des dossiers
+  | 'responsable_technique' // Responsable technique
+  | 'chef_comite'           // Chef du comité technique
+  | 'directeur_evaluation'  // Directeur de l'Évaluation de la Conformité
+  | 'chef_inspections'      // Responsable des inspections
+  | 'inspecteur'            // Inspecteur
+  | 'laboratoire'           // Laboratoire pour analyses et essais
+  | 'comptable'             // Service comptabilité
+  | 'producteur'            // Opérateur économique
+  | 'directeur';            // Direction générale
 
 export interface Permission {
   id: string;
@@ -40,6 +52,15 @@ export interface CertificationRequest {
   status: 'pending' | 'in_process' | 'approved' | 'rejected' | 'corrective_actions';
   workflowStatus?: string;
   workflowHistory?: WorkflowHistoryEntry[];
+  comments?: Array<{
+    id: string;
+    userId: number;
+    userName: string;
+    userRole: string;
+    text: string;
+    timestamp: string;
+    isInternal: boolean;
+  }>;
   files: {
     businessRegistry?: string;
     taxpayerCard?: string;
