@@ -45,7 +45,7 @@ const AppLayout = ({ children, requiredPermission }: AppLayoutProps) => {
         <AppSidebar />
         <div className="flex flex-col flex-1 transition-all">
           <AppHeader />
-          <main className="flex-1 p-3 md:p-4">
+          <main className="flex-1 p-2 md:p-3">
             {children}
           </main>
         </div>

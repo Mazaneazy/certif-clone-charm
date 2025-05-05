@@ -14,7 +14,7 @@ const Support = () => {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-3xl font-bold tracking-tight">Support et Aide</h2>
@@ -26,12 +26,12 @@ const Support = () => {
         
         <Separator />
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2">
             <SupportTab isOpen={true} />
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-4">
             <SupportContactCard />
             <SupportDocumentationCard />
           </div>
