@@ -6,7 +6,7 @@ import {
   Route,
 } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { ToastProvider } from './contexts/ToastContext';
+import { Toaster } from '@/components/ui/sonner';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import Login from './pages/Login';
@@ -34,7 +34,8 @@ import Support from './pages/Support';
 
 function App() {
   return (
-    <ToastProvider>
+    <>
+      <Toaster />
       <AuthProvider>
         <Router>
           <Routes>
@@ -103,7 +104,7 @@ function App() {
           </Routes>
         </Router>
       </AuthProvider>
-    </ToastProvider>
+    </>
   );
 }
 

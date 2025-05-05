@@ -21,10 +21,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useToast } from '@/hooks/use-toast';
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
-  const { open, setOpen, openMobile, setOpenMobile } = useSidebar();
+  const { openMobile, setOpenMobile } = useSidebar();
+  const { toast } = useToast();
   const [notifications] = useState([
     { id: 1, title: 'Nouvelle demande de certification', read: false },
     { id: 2, title: 'Certification ISO 9001 approuvée', read: false },
@@ -52,6 +54,13 @@ const AppHeader = () => {
     directeur: 'Directeur',
     comptable: 'Comptable',
     producteur: 'Producteur'
+  };
+  
+  const handleMarkAllAsRead = () => {
+    toast({
+      title: "Notification",
+      description: "Toutes les notifications ont été marquées comme lues.",
+    });
   };
 
   return (
@@ -99,6 +108,7 @@ const AppHeader = () => {
                   size="sm" 
                   className="h-auto text-xs text-anor-blue hover:text-anor-blue hover:bg-blue-50"
                   aria-label="Marquer toutes les notifications comme lues"
+                  onClick={handleMarkAllAsRead}
                 >
                   Marquer tout comme lu
                 </Button>
