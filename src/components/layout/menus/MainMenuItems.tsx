@@ -94,8 +94,18 @@ export const getMainMenuItems = (): MenuItemType[] => [
     title: "Planification inspections",
     path: "/inspections",
     icon: Calendar,
-    permission: "plan_inspections",
+    permission: "perform_inspection",
     ariaLabel: "Planifier les inspections",
+    roles: ['chef_inspections', 'admin']
+  },
+  
+  // Nouveau - Programmation des missions pour le chef des inspections
+  {
+    title: "Programmer missions",
+    path: "/inspection-planning",
+    icon: ClipboardCheck,
+    permission: "plan_inspections",
+    ariaLabel: "Programmer des missions d'inspection",
     roles: ['chef_inspections', 'admin']
   },
   
