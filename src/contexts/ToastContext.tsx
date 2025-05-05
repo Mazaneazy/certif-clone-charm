@@ -1,9 +1,9 @@
 
-import React, { createContext, useContext } from 'react';
-import { Toaster } from '@/components/ui/sonner';
+import React from 'react';
+import { Toaster } from 'sonner';
 
 // Création d'un contexte vide pour le provider
-const ToastContext = createContext({});
+const ToastContext = React.createContext({});
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -17,7 +17,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const useToast = () => {
-  const context = useContext(ToastContext);
+  const context = React.useContext(ToastContext);
   if (!context) {
     throw new Error('useToast doit être utilisé à l\'intérieur d\'un ToastProvider');
   }

@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
-import AppLayout from './components/layout/AppLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import Login from './pages/Login';
 import CertificationRequests from './pages/CertificationRequests';
@@ -24,6 +24,7 @@ import TestParameters from './pages/TestParameters';
 import Standards from './pages/Standards';
 import Laboratories from './pages/Laboratories';
 import Inspections from './pages/Inspections';
+import InspectionMissions from './pages/InspectionMissions';
 import Reports from './pages/Reports';
 import FeesCalculation from './pages/FeesCalculation';
 import Payments from './pages/Payments';
@@ -39,99 +40,64 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={
-              <AppLayout>
-                <Index />
-              </AppLayout>
+              <ProtectedRoute element={<Index />} />
             } />
             <Route path="/profile" element={
-              <AppLayout>
-                <Profile />
-              </AppLayout>
+              <ProtectedRoute element={<Profile />} />
             } />
             <Route path="/settings" element={
-              <AppLayout>
-                <Settings />
-              </AppLayout>
+              <ProtectedRoute element={<Settings />} requiredPermission="manage_settings" />
             } />
             <Route path="/certification-request" element={
-              <AppLayout>
-                <CertificationRequest />
-              </AppLayout>
+              <ProtectedRoute element={<CertificationRequest />} requiredPermission="register_requests" />
             } />
             <Route path="/certification-requests" element={
-              <AppLayout>
-                <CertificationRequests />
-              </AppLayout>
+              <ProtectedRoute element={<CertificationRequests />} requiredPermission="view_all_requests" />
             } />
             <Route path="/certifications" element={
-              <AppLayout>
-                <Certifications />
-              </AppLayout>
+              <ProtectedRoute element={<Certifications />} />
             } />
             <Route path="/documents" element={
-              <AppLayout>
-                <Documents />
-              </AppLayout>
+              <ProtectedRoute element={<Documents />} />
             } />
             <Route path="/history" element={
-              <AppLayout>
-                <History />
-              </AppLayout>
+              <ProtectedRoute element={<History />} />
             } />
             <Route path="/users" element={
-              <AppLayout>
-                <Users />
-              </AppLayout>
+              <ProtectedRoute element={<Users />} requiredPermission="manage_users" />
             } />
             <Route path="/test-parameters" element={
-              <AppLayout>
-                <TestParameters />
-              </AppLayout>
+              <ProtectedRoute element={<TestParameters />} requiredPermission="manage_test_parameters" />
             } />
             <Route path="/standards" element={
-              <AppLayout>
-                <Standards />
-              </AppLayout>
+              <ProtectedRoute element={<Standards />} />
             } />
             <Route path="/laboratories" element={
-              <AppLayout>
-                <Laboratories />
-              </AppLayout>
+              <ProtectedRoute element={<Laboratories />} requiredPermission="assign_laboratories" />
             } />
             <Route path="/inspections" element={
-              <AppLayout>
-                <Inspections />
-              </AppLayout>
+              <ProtectedRoute element={<Inspections />} requiredPermission="plan_inspections" />
+            } />
+            <Route path="/inspection-missions" element={
+              <ProtectedRoute element={<InspectionMissions />} requiredPermission="perform_inspection" />
             } />
             <Route path="/reports" element={
-              <AppLayout>
-                <Reports />
-              </AppLayout>
+              <ProtectedRoute element={<Reports />} requiredPermission="view_reports" />
             } />
             <Route path="/fees-calculation" element={
-              <AppLayout>
-                <FeesCalculation />
-              </AppLayout>
+              <ProtectedRoute element={<FeesCalculation />} requiredPermission="manage_fees" />
             } />
             <Route path="/payments" element={
-              <AppLayout>
-                <Payments />
-              </AppLayout>
+              <ProtectedRoute element={<Payments />} requiredPermission="manage_payments" />
             } />
             <Route path="/notifications" element={
-              <AppLayout>
-                <Notifications />
-              </AppLayout>
+              <ProtectedRoute element={<Notifications />} />
             } />
             <Route path="/companies" element={
-              <AppLayout>
-                <Companies />
-              </AppLayout>
+              <ProtectedRoute element={<Companies />} requiredPermission="view_companies" />
             } />
             <Route path="/support" element={
-              <AppLayout>
-                <Support />
-              </AppLayout>
+              <ProtectedRoute element={<Support />} />
             } />
             <Route path="*" element={<NotFound />} />
           </Routes>

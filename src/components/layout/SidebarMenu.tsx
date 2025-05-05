@@ -46,7 +46,7 @@ export const getMainMenuItems = (): MenuItemType[] => [
     icon: FileInput,
     permission: "register_requests",
     ariaLabel: "Créer une nouvelle demande",
-    roles: ['accueil', 'admin']
+    roles: ['accueil', 'admin', 'producteur']
   },
   
   // Visible par tous pour suivre les demandes
@@ -145,7 +145,7 @@ export const getMainMenuItems = (): MenuItemType[] => [
     icon: CreditCard,
     permission: "manage_payments",
     ariaLabel: "Gérer les paiements",
-    roles: ['comptable', 'admin']
+    roles: ['comptable', 'admin', 'producteur']
   },
   {
     title: "Entreprises",

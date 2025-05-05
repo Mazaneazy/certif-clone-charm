@@ -3,13 +3,21 @@ import React from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const RequestHeader: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // Rôles qui ne devraient pas voir le bouton "Nouvelle demande"
+  const restrictedRoles = ['responsable_technique', 'chef_inspections', 'directeur_evaluation', 'inspecteur'];
   
   const handleCreateRequest = () => {
     navigate('/certification-request');
   };
+  
+  // Vérifier si l'utilisateur actuel a un rôle qui devrait voir le bouton
+  const shouldShowButton = user && !restrictedRoles.includes(user.role);
   
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -17,13 +25,16 @@ const RequestHeader: React.FC = () => {
         <h1 className="text-3xl font-bold tracking-tight">Demandes de Certification</h1>
         <p className="text-muted-foreground">Gestion des demandes de certification</p>
       </div>
-      <Button 
-        onClick={handleCreateRequest} 
-        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 self-start sm:self-auto"
-      >
-        <PlusCircle className="h-4 w-4" />
-        <span>Nouvelle demande</span>
-      </Button>
+      
+      {shouldShowButton && (
+        <Button 
+          onClick={handleCreateRequest} 
+          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 self-start sm:self-auto"
+        >
+          <PlusCircle className="h-4 w-4" />
+          <span>Nouvelle demande</span>
+        </Button>
+      )}
     </div>
   );
 };
