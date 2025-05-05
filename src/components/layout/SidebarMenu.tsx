@@ -1,8 +1,8 @@
 
 import { getMainMenuItems } from './menus/MainMenuItems';
 import { getAccountMenuItems } from './menus/AccountMenuItems';
-import { MenuItemType } from '@/types/menu';
+import { type MenuItemType } from '@/types/menu';
 
 // Re-export the menu items and types
-export { MenuItemType };
+export { type MenuItemType };
 export { getMainMenuItems, getAccountMenuItems };
