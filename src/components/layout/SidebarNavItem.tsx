@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   SidebarMenuItem, 
   SidebarMenuButton 
 } from "@/components/ui/sidebar";
-import { MenuItemType } from './SidebarMenu';
+import { MenuItemType } from '@/types/menu';
 
 interface SidebarNavItemProps {
   item: MenuItemType;

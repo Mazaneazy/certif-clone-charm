@@ -6,7 +6,7 @@ import {
   SidebarGroupContent,
   SidebarMenu,
 } from "@/components/ui/sidebar";
-import { MenuItemType } from './SidebarMenu';
+import { MenuItemType } from '@/types/menu';
 import SidebarNavItem from './SidebarNavItem';
 
 interface SidebarNavGroupProps {
