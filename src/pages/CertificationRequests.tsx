@@ -77,6 +77,15 @@ const CertificationRequests = () => {
     setIsDetailsOpen(true);
   };
 
+  const handleRequestUpdated = (updatedRequest: CertificationRequest) => {
+    // Mettre à jour la demande dans la liste locale
+    const updatedRequests = requests.map(req => 
+      req.id === updatedRequest.id ? updatedRequest : req
+    );
+    setRequests(updatedRequests);
+    setSelectedRequest(updatedRequest);
+  };
+
   const resetFilters = () => {
     setSearchQuery('');
     setStatusFilter('all');
@@ -124,6 +133,7 @@ const CertificationRequests = () => {
           isOpen={isDetailsOpen}
           setIsOpen={setIsDetailsOpen}
           selectedRequest={selectedRequest}
+          onRequestUpdated={handleRequestUpdated}
         />
       </div>
     </AppLayout>

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -9,22 +9,38 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CertificationRequest } from '@/types/auth';
+import WorkflowStepper from './WorkflowStepper';
+import WorkflowActions from './WorkflowActions';
+import WorkflowHistory from './WorkflowHistory';
+import { getWorkflowSteps, workflowActions } from '@/services/workflowService';
+import { updateWorkflowStatus } from '@/services/requestService';
 
 interface CertificationRequestDetailsProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   selectedRequest: CertificationRequest | null;
+  onRequestUpdated?: (request: CertificationRequest) => void;
 }
 
 const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = ({
   isOpen,
   setIsOpen,
-  selectedRequest
+  selectedRequest,
+  onRequestUpdated
 }) => {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('details');
+  const [updatedRequest, setUpdatedRequest] = useState<CertificationRequest | null>(selectedRequest);
+
+  // Mettre à jour la référence locale quand selectedRequest change
+  React.useEffect(() => {
+    setUpdatedRequest(selectedRequest);
+  }, [selectedRequest]);
 
   const handleDownloadFile = (filename: string) => {
     toast({
@@ -50,9 +66,45 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
     }
   };
 
+  const handlePerformAction = (actionId: string, comment?: string) => {
+    if (!selectedRequest) return;
+
+    try {
+      // Mettre à jour le statut du workflow
+      const updated = updateWorkflowStatus(selectedRequest.id, actionId, comment);
+      setUpdatedRequest(updated);
+      
+      // Notifier le composant parent
+      if (onRequestUpdated) {
+        onRequestUpdated(updated);
+      }
+
+      // Notification de succès
+      toast({
+        title: "Action effectuée",
+        description: "Le statut de la demande a été mis à jour avec succès.",
+      });
+
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du statut:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la mise à jour du statut.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Si aucune demande n'est sélectionnée, ne rien afficher
+  if (!updatedRequest) {
+    return null;
+  }
+
+  const workflowSteps = getWorkflowSteps(updatedRequest.workflowStatus as any || 'reception');
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Détails de la demande</DialogTitle>
           <DialogDescription>
@@ -60,39 +112,45 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
           </DialogDescription>
         </DialogHeader>
 
-        {selectedRequest && (
-          <div className="space-y-6 py-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+          <TabsList className="grid grid-cols-3 mb-4">
+            <TabsTrigger value="details">Détails</TabsTrigger>
+            <TabsTrigger value="workflow">Workflow</TabsTrigger>
+            <TabsTrigger value="history">Historique</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="details" className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Entreprise</h4>
-                <p className="text-base font-semibold">{selectedRequest.companyName}</p>
+                <p className="text-base font-semibold">{updatedRequest.companyName}</p>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Promoteur</h4>
-                <p>{selectedRequest.promoterName}</p>
+                <p>{updatedRequest.promoterName}</p>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Téléphone</h4>
-                <p>{selectedRequest.phone}</p>
+                <p>{updatedRequest.phone}</p>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Date d'enregistrement</h4>
-                <p>{new Date(selectedRequest.registrationDate).toLocaleDateString('fr-FR')}</p>
+                <p>{new Date(updatedRequest.registrationDate).toLocaleDateString('fr-FR')}</p>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">Statut</h4>
-                <div>{getStatusBadge(selectedRequest.status)}</div>
+                <div>{getStatusBadge(updatedRequest.status)}</div>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-muted-foreground mb-1">ID</h4>
-                <p>{selectedRequest.id}</p>
+                <p>{updatedRequest.id}</p>
               </div>
             </div>
             
             <div>
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Produits</h4>
               <ul className="list-disc pl-5 space-y-1">
-                {selectedRequest.products.map((product, index) => (
+                {updatedRequest.products.map((product, index) => (
                   <li key={index}>{product}</li>
                 ))}
               </ul>
@@ -101,7 +159,7 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
             <div>
               <h4 className="text-sm font-medium text-muted-foreground mb-2">Documents</h4>
               <div className="space-y-2">
-                {Object.entries(selectedRequest.files).map(([key, filename]) => (
+                {Object.entries(updatedRequest.files).map(([key, filename]) => (
                   filename && (
                     <div key={key} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                       <span className="text-sm">
@@ -126,8 +184,30 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          </TabsContent>
+          
+          <TabsContent value="workflow" className="space-y-6">
+            <WorkflowStepper steps={workflowSteps} />
+            
+            <div className="border-t pt-6">
+              <WorkflowActions 
+                currentStatus={updatedRequest.workflowStatus || 'reception'} 
+                actions={workflowActions}
+                onPerformAction={handlePerformAction}
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="history" className="space-y-6">
+            <WorkflowHistory history={updatedRequest.workflowHistory || []} />
+          </TabsContent>
+        </Tabs>
+
+        <DialogFooter className="mt-6">
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            Fermer
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

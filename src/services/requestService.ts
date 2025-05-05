@@ -1,5 +1,7 @@
 
 import { CertificationRequest } from '@/types/auth';
+import { WorkflowStatus } from '@/types/workflow';
+import { executeWorkflowAction } from './workflowService';
 
 // Clé pour le stockage local
 const STORAGE_KEY = 'certification-requests';
@@ -14,6 +16,27 @@ const initialDemoRequests: CertificationRequest[] = [
     products: ["Bière 33 Export", "Beaufort Lager", "Castel Beer"],
     registrationDate: "2025-01-15",
     status: "in_process",
+    workflowStatus: "technical_review",
+    workflowHistory: [
+      { 
+        date: "2025-01-15", 
+        status: "reception", 
+        user: "Jean Onana", 
+        comment: "Dossier reçu complet" 
+      },
+      { 
+        date: "2025-01-20", 
+        status: "evaluation_preliminary", 
+        user: "Marie Ekomo", 
+        comment: "Documents conformes aux exigences" 
+      },
+      { 
+        date: "2025-01-25", 
+        status: "technical_review", 
+        user: "Paul Biya", 
+        comment: "Dossier en cours d'évaluation technique" 
+      }
+    ],
     files: {
       businessRegistry: "registre_commerce_sabc.pdf",
       taxpayerCard: "niu_sabc.pdf",
@@ -30,6 +53,15 @@ const initialDemoRequests: CertificationRequest[] = [
     products: ["Sucre blanc en morceaux", "Sucre roux", "Sucre en poudre"],
     registrationDate: "2025-02-20",
     status: "pending",
+    workflowStatus: "reception",
+    workflowHistory: [
+      { 
+        date: "2025-02-20", 
+        status: "reception", 
+        user: "Jean Onana", 
+        comment: "Demande reçue, en attente d'analyse" 
+      }
+    ],
     files: {
       businessRegistry: "registre_commerce_sosucam.pdf",
       taxpayerCard: "niu_sosucam.pdf",
@@ -47,6 +79,63 @@ const initialDemoRequests: CertificationRequest[] = [
     products: ["Chocolat Mambo", "Bonbons Wick's", "Caramels Kola"],
     registrationDate: "2025-03-05",
     status: "approved",
+    workflowStatus: "completed",
+    workflowHistory: [
+      { 
+        date: "2025-03-05", 
+        status: "reception", 
+        user: "Jean Onana", 
+        comment: "Dossier reçu et vérifié" 
+      },
+      { 
+        date: "2025-03-10", 
+        status: "evaluation_preliminary", 
+        user: "Marie Ekomo", 
+        comment: "Évaluation préliminaire complétée" 
+      },
+      { 
+        date: "2025-03-15", 
+        status: "technical_review", 
+        user: "Paul Biya", 
+        comment: "Revue technique satisfaisante" 
+      },
+      { 
+        date: "2025-03-20", 
+        status: "inspection_planning", 
+        user: "Elvire Simo", 
+        comment: "Inspection réalisée avec succès" 
+      },
+      { 
+        date: "2025-03-25", 
+        status: "laboratory_testing", 
+        user: "Roger Milla", 
+        comment: "Tests en laboratoire concluants" 
+      },
+      { 
+        date: "2025-03-30", 
+        status: "evaluation_final", 
+        user: "Marie Ekomo", 
+        comment: "Évaluation finale positive" 
+      },
+      { 
+        date: "2025-04-05", 
+        status: "decision_committee", 
+        user: "Comité de certification", 
+        comment: "Certification approuvée à l'unanimité" 
+      },
+      { 
+        date: "2025-04-10", 
+        status: "certification_issuance", 
+        user: "Jean Onana", 
+        comment: "Certificat émis et transmis" 
+      },
+      { 
+        date: "2025-04-10", 
+        status: "completed", 
+        user: "Jean Onana", 
+        comment: "Processus de certification terminé" 
+      }
+    ],
     files: {
       businessRegistry: "registre_commerce_chococam.pdf",
       taxpayerCard: "niu_chococam.pdf",
@@ -63,6 +152,27 @@ const initialDemoRequests: CertificationRequest[] = [
     products: ["Pagne écru", "Tissus imprimés", "Serviettes"],
     registrationDate: "2025-03-20",
     status: "corrective_actions",
+    workflowStatus: "reception",
+    workflowHistory: [
+      { 
+        date: "2025-03-20", 
+        status: "reception", 
+        user: "Jean Onana", 
+        comment: "Dossier reçu" 
+      },
+      { 
+        date: "2025-03-25", 
+        status: "evaluation_preliminary", 
+        user: "Marie Ekomo", 
+        comment: "Documents incomplets" 
+      },
+      { 
+        date: "2025-03-30", 
+        status: "reception", 
+        user: "Marie Ekomo", 
+        comment: "Demande de compléments d'information" 
+      }
+    ],
     files: {
       businessRegistry: "registre_commerce_cicam.pdf",
       taxpayerCard: "niu_cicam.pdf",
@@ -93,6 +203,12 @@ export const getRequests = (): CertificationRequest[] => {
   }
 };
 
+// Récupère une demande par ID
+export const getRequestById = (requestId: number): CertificationRequest | undefined => {
+  const requests = getRequests();
+  return requests.find(request => request.id === requestId);
+};
+
 // Ajoute une nouvelle demande
 export const addRequest = (newRequest: Omit<CertificationRequest, 'id'>): CertificationRequest => {
   const currentRequests = getRequests();
@@ -102,9 +218,17 @@ export const addRequest = (newRequest: Omit<CertificationRequest, 'id'>): Certif
     ? Math.max(...currentRequests.map(r => r.id)) + 1 
     : 1;
     
+  // Ajouter les propriétés de workflow
   const requestWithId: CertificationRequest = {
     ...newRequest,
-    id: newId
+    id: newId,
+    workflowStatus: 'reception' as WorkflowStatus,
+    workflowHistory: [{
+      date: new Date().toISOString(),
+      status: 'reception',
+      user: "Utilisateur actuel", // En production, utiliser l'utilisateur connecté
+      comment: "Nouvelle demande enregistrée"
+    }]
   };
   
   const updatedRequests = [...currentRequests, requestWithId];
@@ -119,6 +243,60 @@ export const addRequest = (newRequest: Omit<CertificationRequest, 'id'>): Certif
   window.dispatchEvent(event);
   
   return requestWithId;
+};
+
+// Mettre à jour le statut du workflow
+export const updateWorkflowStatus = (
+  requestId: number, 
+  actionId: string, 
+  comment?: string
+): CertificationRequest => {
+  const requests = getRequests();
+  const requestIndex = requests.findIndex(r => r.id === requestId);
+  
+  if (requestIndex === -1) {
+    throw new Error(`Demande non trouvée: ${requestId}`);
+  }
+  
+  const request = requests[requestIndex];
+  
+  // Exécuter l'action et obtenir le nouveau statut
+  const newStatus = executeWorkflowAction(requestId, actionId, comment);
+  
+  // Mettre à jour le statut de la demande basé sur le statut du workflow
+  let requestStatus = request.status;
+  if (newStatus === 'completed') {
+    // Si le workflow est terminé, mettre à jour le statut de la demande
+    requestStatus = 'approved'; // ou rejected selon l'action
+  } else if (newStatus === 'reception' && request.workflowStatus !== 'reception') {
+    // Si on revient à la réception pour des compléments
+    requestStatus = 'corrective_actions';
+  } else if (newStatus !== 'reception') {
+    // Si on avance dans le workflow
+    requestStatus = 'in_process';
+  }
+  
+  // Créer l'entrée d'historique
+  const historyEntry = {
+    date: new Date().toISOString(),
+    status: newStatus,
+    user: "Utilisateur actuel", // En production, utiliser l'utilisateur connecté
+    comment: comment || "Statut mis à jour"
+  };
+  
+  // Mettre à jour la demande
+  const updatedRequest: CertificationRequest = {
+    ...request,
+    status: requestStatus,
+    workflowStatus: newStatus as WorkflowStatus,
+    workflowHistory: [...(request.workflowHistory || []), historyEntry]
+  };
+  
+  // Mettre à jour la liste des demandes
+  requests[requestIndex] = updatedRequest;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+  
+  return updatedRequest;
 };
 
 // Filtre les demandes selon des critères

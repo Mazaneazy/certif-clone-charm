@@ -23,6 +23,13 @@ export interface AuthState {
   isLoading: boolean;
 }
 
+export interface WorkflowHistoryEntry {
+  date: string;
+  status: string;
+  user: string;
+  comment: string;
+}
+
 export interface CertificationRequest {
   id: number;
   companyName: string;
@@ -31,6 +38,8 @@ export interface CertificationRequest {
   products: string[];
   registrationDate: string;
   status: 'pending' | 'in_process' | 'approved' | 'rejected' | 'corrective_actions';
+  workflowStatus?: string;
+  workflowHistory?: WorkflowHistoryEntry[];
   files: {
     businessRegistry?: string;
     taxpayerCard?: string;
