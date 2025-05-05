@@ -69,9 +69,9 @@ const Login = () => {
           <div className="mx-auto mb-4">
             <Logo />
           </div>
-          <CardTitle className="text-2xl font-bold text-anor-blue">Système de Certification</CardTitle>
+          <CardTitle className="text-2xl font-bold text-anor-blue">Evaluation de Conformité des Produits Locaux</CardTitle>
           <CardDescription className="text-base">
-            Connectez-vous à la plateforme de gestion des certifications
+            Connectez-vous pour accéder à la platefome
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
