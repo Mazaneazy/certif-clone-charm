@@ -4,10 +4,12 @@ import AppLayout from '@/components/layout/AppLayout';
 import RequestHeader from '@/components/certifications/RequestHeader';
 import RequestFilters from '@/components/certifications/RequestFilters';
 import RequestTable from '@/components/certifications/RequestTable';
+import RequestDashboard from '@/components/certifications/RequestDashboard';
 import EmptyRequestState from '@/components/certifications/EmptyRequestState';
 import CertificationRequestDetails from '@/components/certifications/CertificationRequestDetails';
 import { CertificationRequest } from '@/types/auth';
 import { getRequests, filterRequests, addRequest } from '@/services/requestService';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const CertificationRequests = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,6 +17,7 @@ const CertificationRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState<CertificationRequest | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [requests, setRequests] = useState<CertificationRequest[]>([]);
+  const [activeTab, setActiveTab] = useState('tableau');
 
   // Charger les demandes au démarrage
   useEffect(() => {
@@ -84,21 +87,38 @@ const CertificationRequests = () => {
       <div className="space-y-6">
         <RequestHeader />
         
-        <RequestFilters 
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-        />
-
-        {filteredRequests.length > 0 ? (
-          <RequestTable 
-            requests={filteredRequests} 
-            onViewDetails={handleViewDetails} 
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="tableau">Tableau</TabsTrigger>
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          </TabsList>
+          
+          <RequestFilters 
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
           />
-        ) : (
-          <EmptyRequestState resetFilters={resetFilters} />
-        )}
+          
+          <TabsContent value="tableau" className="mt-6">
+            {filteredRequests.length > 0 ? (
+              <RequestTable 
+                requests={filteredRequests} 
+                onViewDetails={handleViewDetails} 
+              />
+            ) : (
+              <EmptyRequestState resetFilters={resetFilters} />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="dashboard" className="mt-6">
+            {requests.length > 0 ? (
+              <RequestDashboard requests={requests} />
+            ) : (
+              <EmptyRequestState resetFilters={resetFilters} />
+            )}
+          </TabsContent>
+        </Tabs>
 
         <CertificationRequestDetails 
           isOpen={isDetailsOpen}
