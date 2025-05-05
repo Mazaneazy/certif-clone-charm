@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   BrowserRouter as Router,
@@ -7,7 +8,6 @@ import {
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import AppLayout from './components/layout/AppLayout';
-import ProtectedRoute from './components/ProtectedRoute';
 
 import Login from './pages/Login';
 import CertificationRequests from './pages/CertificationRequests';
@@ -38,25 +38,101 @@ function App() {
         <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Index />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/certification-request" element={<CertificationRequest />} />
-            <Route path="/certification-requests" element={<CertificationRequests />} />
-            <Route path="/certifications" element={<Certifications />} />
-            <Route path="/documents" element={<Documents />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/test-parameters" element={<TestParameters />} />
-            <Route path="/standards" element={<Standards />} />
-            <Route path="/laboratories" element={<Laboratories />} />
-            <Route path="/inspections" element={<Inspections />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/fees-calculation" element={<FeesCalculation />} />
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/companies" element={<Companies />} />
-            <Route path="/support" element={<Support />} />
+            <Route path="/" element={
+              <AppLayout>
+                <Index />
+              </AppLayout>
+            } />
+            <Route path="/profile" element={
+              <AppLayout>
+                <Profile />
+              </AppLayout>
+            } />
+            <Route path="/settings" element={
+              <AppLayout>
+                <Settings />
+              </AppLayout>
+            } />
+            <Route path="/certification-request" element={
+              <AppLayout>
+                <CertificationRequest />
+              </AppLayout>
+            } />
+            <Route path="/certification-requests" element={
+              <AppLayout>
+                <CertificationRequests />
+              </AppLayout>
+            } />
+            <Route path="/certifications" element={
+              <AppLayout>
+                <Certifications />
+              </AppLayout>
+            } />
+            <Route path="/documents" element={
+              <AppLayout>
+                <Documents />
+              </AppLayout>
+            } />
+            <Route path="/history" element={
+              <AppLayout>
+                <History />
+              </AppLayout>
+            } />
+            <Route path="/users" element={
+              <AppLayout>
+                <Users />
+              </AppLayout>
+            } />
+            <Route path="/test-parameters" element={
+              <AppLayout>
+                <TestParameters />
+              </AppLayout>
+            } />
+            <Route path="/standards" element={
+              <AppLayout>
+                <Standards />
+              </AppLayout>
+            } />
+            <Route path="/laboratories" element={
+              <AppLayout>
+                <Laboratories />
+              </AppLayout>
+            } />
+            <Route path="/inspections" element={
+              <AppLayout>
+                <Inspections />
+              </AppLayout>
+            } />
+            <Route path="/reports" element={
+              <AppLayout>
+                <Reports />
+              </AppLayout>
+            } />
+            <Route path="/fees-calculation" element={
+              <AppLayout>
+                <FeesCalculation />
+              </AppLayout>
+            } />
+            <Route path="/payments" element={
+              <AppLayout>
+                <Payments />
+              </AppLayout>
+            } />
+            <Route path="/notifications" element={
+              <AppLayout>
+                <Notifications />
+              </AppLayout>
+            } />
+            <Route path="/companies" element={
+              <AppLayout>
+                <Companies />
+              </AppLayout>
+            } />
+            <Route path="/support" element={
+              <AppLayout>
+                <Support />
+              </AppLayout>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
