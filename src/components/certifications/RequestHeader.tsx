@@ -10,7 +10,7 @@ const RequestHeader: React.FC = () => {
   const { user } = useAuth();
   
   // Rôles qui ne devraient pas voir le bouton "Nouvelle demande"
-  const restrictedRoles = ['responsable_technique', 'chef_inspections', 'directeur_evaluation', 'inspecteur'];
+  const restrictedRoles = ['responsable_technique', 'chef_inspections', 'directeur_evaluation', 'inspecteur', 'chef_comite'];
   
   const handleCreateRequest = () => {
     navigate('/certification-request');

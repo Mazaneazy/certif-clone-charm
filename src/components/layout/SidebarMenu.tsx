@@ -168,7 +168,7 @@ export const getMainMenuItems = (): MenuItemType[] => [
     icon: TestTube,
     permission: "assign_laboratories",
     ariaLabel: "Gérer les laboratoires",
-    roles: ['responsable_technique', 'chef_comite', 'admin']
+    roles: ['responsable_technique', 'chef_comite', 'directeur_evaluation', 'admin']
   },
   {
     title: "Utilisateurs",
@@ -176,7 +176,7 @@ export const getMainMenuItems = (): MenuItemType[] => [
     icon: Users,
     permission: "manage_users",
     ariaLabel: "Gérer les utilisateurs",
-    roles: ['admin']
+    roles: ['admin', 'directeur_evaluation']
   },
   {
     title: "Rapports",

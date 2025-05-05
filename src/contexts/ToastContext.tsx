@@ -1,15 +1,19 @@
 
 import React from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 
-// Création d'un contexte vide pour le provider
-const ToastContext = React.createContext({});
+// Create a ToastContext with the toast function
+interface ToastContextType {
+  toast: typeof toast;
+}
+
+const ToastContext = React.createContext<ToastContextType>({ toast });
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Toaster />
-      <ToastContext.Provider value={{}}>
+      <ToastContext.Provider value={{ toast }}>
         {children}
       </ToastContext.Provider>
     </>

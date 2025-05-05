@@ -32,7 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredPermis
   }
 
   // Si tout est bon, afficher le composant demandé à l'intérieur du layout
-  return <AppLayout>{element}</AppLayout>;
+  return <AppLayout requiredPermission={requiredPermission}>{element}</AppLayout>;
 };
 
 export default ProtectedRoute;
