@@ -36,7 +36,7 @@ export const getMainMenuItems = (): MenuItemType[] => [
     icon: FileInput,
     permission: "register_requests",
     ariaLabel: "Créer une nouvelle demande",
-    roles: ['accueil', 'admin', 'producteur']
+    roles: ['gestionnaire', 'accueil', 'admin', 'producteur']
   },
   
   // Visible par tous pour suivre les demandes
@@ -45,7 +45,8 @@ export const getMainMenuItems = (): MenuItemType[] => [
     path: "/certification-requests",
     icon: FileSearch,
     permission: "view_all_requests",
-    ariaLabel: "Voir les demandes de certification"
+    ariaLabel: "Voir les demandes de certification",
+    roles: ['gestionnaire', 'admin', 'accueil', 'responsable_technique', 'chef_inspections', 'directeur_evaluation']
   },
   
   // Étape 2: Gestionnaire - Évaluation préliminaire

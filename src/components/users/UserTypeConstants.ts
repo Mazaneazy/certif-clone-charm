@@ -2,6 +2,7 @@
 // Types d'utilisateurs
 export const USER_TYPES = [
   { id: 'admin', name: 'Administrateur', permissions: ['*'] },
+  { id: 'gestionnaire', name: 'Gestionnaire des Dossiers', permissions: ['register_requests', 'view_all_requests', 'evaluate_requests', 'manage_certifications', 'view_reports'] },
   { id: 'accueil', name: 'Poste Accueil', permissions: ['register_requests', 'view_all_requests'] },
   { id: 'responsable_technique', name: 'Responsable Technique', permissions: ['view_all_requests', 'manage_test_parameters', 'assign_laboratories', 'review_reports'] },
   { id: 'laboratoire', name: 'Laboratoire', permissions: ['upload_test_results', 'view_assigned_tests'] },
