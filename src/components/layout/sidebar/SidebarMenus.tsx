@@ -1,7 +1,7 @@
 
-import { MenuItemType } from '@/types/menu';
 import { getMainMenuItems } from '../menus/MainMenuItems';
 import { getAccountMenuItems } from '../menus/AccountMenuItems';
+import { type MenuItemType } from '@/types/menu';
 
 // Export menu retrieving functions
 export const getFilteredMenuItems = (
@@ -13,4 +13,5 @@ export const getFilteredMenuItems = (
   );
 };
 
-export { MenuItemType, getMainMenuItems, getAccountMenuItems };
+export { getMainMenuItems, getAccountMenuItems };
+export type { MenuItemType };
