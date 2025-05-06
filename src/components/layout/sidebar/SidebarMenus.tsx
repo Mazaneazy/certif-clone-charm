@@ -15,3 +15,4 @@ export const getFilteredMenuItems = (
 
 export { getMainMenuItems, getAccountMenuItems };
 export type { MenuItemType };
+
