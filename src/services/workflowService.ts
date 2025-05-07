@@ -89,7 +89,7 @@ export const workflowActions: WorkflowAction[] = [
 export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] => {
   const allSteps: WorkflowStep[] = [
     {
-      id: 'reception',
+      id: 1,
       name: 'Réception de la demande',
       description: 'Examen initial des documents soumis',
       order: 1,
@@ -97,7 +97,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'reception',
     },
     {
-      id: 'evaluation_preliminary',
+      id: 2,
       name: 'Évaluation préliminaire',
       description: 'Vérification de la conformité des documents',
       order: 2,
@@ -105,7 +105,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'evaluation_preliminary',
     },
     {
-      id: 'technical_review',
+      id: 3,
       name: 'Revue technique',
       description: 'Analyse approfondie de la demande',
       order: 3,
@@ -113,7 +113,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'technical_review',
     },
     {
-      id: 'inspection_planning',
+      id: 4,
       name: 'Inspection sur site',
       description: 'Visite et contrôle des installations',
       order: 4,
@@ -121,7 +121,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'inspection_planning',
     },
     {
-      id: 'laboratory_testing',
+      id: 5,
       name: 'Tests en laboratoire',
       description: 'Analyse des échantillons',
       order: 5,
@@ -129,7 +129,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'laboratory_testing',
     },
     {
-      id: 'evaluation_final',
+      id: 6,
       name: 'Évaluation finale',
       description: 'Synthèse des résultats et préparation du dossier',
       order: 6,
@@ -137,7 +137,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'evaluation_final',
     },
     {
-      id: 'decision_committee',
+      id: 7,
       name: 'Décision du comité',
       description: 'Examen par le comité de certification',
       order: 7,
@@ -145,7 +145,7 @@ export const getWorkflowSteps = (currentStatus: WorkflowStatus): WorkflowStep[] 
       isActive: currentStatus === 'decision_committee',
     },
     {
-      id: 'certification_issuance',
+      id: 8,
       name: 'Émission du certificat',
       description: 'Génération et délivrance du certificat',
       order: 8,

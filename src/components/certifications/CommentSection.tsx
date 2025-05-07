@@ -63,14 +63,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ comments, onAddComment 
             >
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{comment.userName}</span>
-                  <span className="text-xs text-gray-500">{comment.userRole}</span>
+                  <span className="font-medium">{comment.userName || comment.author || "Utilisateur"}</span>
+                  <span className="text-xs text-gray-500">{comment.userRole || ""}</span>
                   {comment.isInternal && (
                     <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-800 rounded">Interne</span>
                   )}
                 </div>
                 <span className="text-xs text-gray-500">
-                  {formatDistanceToNow(new Date(comment.timestamp), { 
+                  {formatDistanceToNow(new Date(comment.timestamp || comment.date || new Date()), { 
                     addSuffix: true,
                     locale: fr
                   })}

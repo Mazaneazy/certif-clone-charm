@@ -1,4 +1,6 @@
 
+import { FeesCalculation, CommentItem } from './workflow';
+
 export type UserRole = 
   | 'admin' 
   | 'accueil'               // Réception des dossiers
@@ -52,15 +54,7 @@ export interface CertificationRequest {
   status: 'pending' | 'in_process' | 'approved' | 'rejected' | 'corrective_actions';
   workflowStatus?: string;
   workflowHistory?: WorkflowHistoryEntry[];
-  comments?: Array<{
-    id: string;
-    userId: number;
-    userName: string;
-    userRole: string;
-    text: string;
-    timestamp: string;
-    isInternal: boolean;
-  }>;
+  comments?: CommentItem[];
   files: {
     businessRegistry?: string;
     taxpayerCard?: string;
@@ -100,18 +94,4 @@ export interface InspectionMission {
   scheduledDate: string;
   status: 'scheduled' | 'in_progress' | 'completed';
   reportFile?: string;
-}
-
-export interface FeesCalculation {
-  id: number;
-  certificationRequestId: number;
-  fileManagementFee: number;
-  inspectionSamplingFee: number;
-  surveillanceFee: number;
-  testParameters: {
-    parameterId: number;
-    quantity: number;
-  }[];
-  totalAmount: number;
-  status: 'draft' | 'submitted' | 'approved' | 'paid';
 }

@@ -16,34 +16,59 @@ export interface FeesCalculation {
   validationDate?: string;
 }
 
-// Adding missing types that are causing build errors
+// Updating CommentItem to match what's used in the components
 export interface CommentItem {
-  id: number;
+  id: string | number;
   text: string;
-  author: string;
-  date: string;
-  authorId?: number;
+  author?: string;
+  date?: string;
+  userId?: number;
+  userName?: string;
+  userRole?: string;
+  timestamp?: string;
+  isInternal?: boolean;
 }
 
+// Updating WorkflowStep to include all properties used in components
 export interface WorkflowStep {
-  id: number;
+  id: string | number;
   name: string;
-  status: WorkflowStatus;
+  description?: string;
+  order: number;
+  status?: WorkflowStatus;
+  isCompleted: boolean;
+  isActive: boolean;
+  dateCompleted?: string;
+  actionRequired?: string;
   completedDate?: string;
 }
 
+// Updating WorkflowStatus to include all the statuses used in the workflow
 export type WorkflowStatus = 
   | 'pending'
   | 'in_progress'
   | 'completed'
   | 'rejected'
   | 'cancelled'
-  | 'on_hold';
+  | 'on_hold'
+  | 'reception'
+  | 'evaluation_preliminary'
+  | 'technical_review'
+  | 'inspection_planning'
+  | 'laboratory_testing'
+  | 'evaluation_final'
+  | 'decision_committee'
+  | 'certification_issuance';
 
+// Updating WorkflowAction to include all properties used in components
 export interface WorkflowAction {
   id: string;
-  label: string;
+  name: string;
+  label?: string;
+  description?: string;
+  availableInStatus: WorkflowStatus[];
   nextStatus: WorkflowStatus;
-  actionType: 'approve' | 'reject' | 'send_back' | 'request_info' | 'complete';
+  actionType?: 'approve' | 'reject' | 'send_back' | 'request_info' | 'complete';
+  requiresComment?: boolean;
   requiredRole?: string;
 }

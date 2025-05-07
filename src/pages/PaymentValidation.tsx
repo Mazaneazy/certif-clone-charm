@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -12,9 +11,9 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { FeesCalculation } from '@/types/auth';
+import { FeesCalculation } from '@/types/workflow';
 import { getFeesCalculations, validatePayment } from '@/services/paymentValidationService';
-import { Check, X, AlertCircle, CreditCard } from 'lucide-react';
+import { Check, X, AlertCircle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,

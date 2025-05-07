@@ -1,5 +1,5 @@
 
-import { FeesCalculation } from '@/types/auth';
+import { FeesCalculation } from '@/types/workflow';
 
 // Clé pour le stockage local
 const FEES_STORAGE_KEY = 'fees-calculations';
@@ -84,7 +84,7 @@ export const validatePayment = (
     throw new Error(`Calcul de frais non trouvé: ${feeId}`);
   }
   
-  const updatedFee = {
+  const updatedFee: FeesCalculation = {
     ...fees[index],
     status: validated ? 'approved' : 'rejected',
     validationComment: comment,
