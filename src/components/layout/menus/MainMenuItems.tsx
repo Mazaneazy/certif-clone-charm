@@ -16,7 +16,11 @@ import {
   FileInput,
   ClipboardCheck,
   Building,
-  HelpCircle
+  HelpCircle,
+  FileUp,
+  UserCheck,
+  CheckSquare,
+  Send
 } from "lucide-react";
 import { MenuItemType } from "@/types/menu";
 
@@ -63,10 +67,30 @@ export const getMainMenuItems = (): MenuItemType[] => [
   {
     title: "Comités techniques",
     path: "/technical-committees",
-    icon: Users,
+    icon: UserCheck,
     permission: "manage_committees",
     ariaLabel: "Gérer les comités techniques",
     roles: ['responsable_technique', 'chef_comite', 'admin']
+  },
+  
+  // Fonctionnalité du responsable technique pour valider les paiements
+  {
+    title: "Valider paiements",
+    path: "/payment-validation",
+    icon: CheckSquare,
+    permission: "manage_fees",
+    ariaLabel: "Valider les paiements reçus",
+    roles: ['responsable_technique', 'admin', 'comptable']
+  },
+  
+  // Fonctionnalité du responsable technique pour transmettre les rapports
+  {
+    title: "Transmettre rapports",
+    path: "/report-transmission",
+    icon: Send,
+    permission: "view_reports",
+    ariaLabel: "Transmettre des rapports au Directeur",
+    roles: ['responsable_technique', 'admin']
   },
   
   // Étape 4: Pour le comité et le responsable technique

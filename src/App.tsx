@@ -32,6 +32,9 @@ import Notifications from './pages/Notifications';
 import Companies from './pages/Companies';
 import Support from './pages/Support';
 import EvaluationPreliminary from './pages/EvaluationPreliminary';
+import TechnicalCommittees from './pages/TechnicalCommittees';
+import PaymentValidation from './pages/PaymentValidation';
+import ReportTransmission from './pages/ReportTransmission';
 
 function App() {
   return (
@@ -61,6 +64,15 @@ function App() {
             } />
             <Route path="/certifications" element={
               <ProtectedRoute element={<Certifications />} />
+            } />
+            <Route path="/technical-committees" element={
+              <ProtectedRoute element={<TechnicalCommittees />} requiredPermission="manage_committees" />
+            } />
+            <Route path="/payment-validation" element={
+              <ProtectedRoute element={<PaymentValidation />} requiredPermission="manage_fees" />
+            } />
+            <Route path="/report-transmission" element={
+              <ProtectedRoute element={<ReportTransmission />} requiredPermission="view_reports" />
             } />
             <Route path="/documents" element={
               <ProtectedRoute element={<Documents />} />
