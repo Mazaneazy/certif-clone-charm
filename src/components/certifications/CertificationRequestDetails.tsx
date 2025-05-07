@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -138,6 +137,40 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
     }
   };
 
+  const handleSendToReception = () => {
+    if (!updatedRequest || !user) return;
+
+    try {
+      // Mettre à jour le statut du workflow
+      const updated = updateWorkflowStatus(
+        updatedRequest.id, 
+        'request_additional_info',
+        "Dossier renvoyé à l'accueil pour traitement complémentaire."
+      );
+      
+      setUpdatedRequest(updated);
+      
+      // Notifier le composant parent
+      if (onRequestUpdated) {
+        onRequestUpdated(updated);
+      }
+
+      // Notification de succès
+      toast({
+        title: "Dossier renvoyé",
+        description: "Le dossier a été renvoyé à l'accueil avec succès.",
+      });
+
+    } catch (error) {
+      console.error("Erreur lors du renvoi du dossier:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors du renvoi du dossier.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Si aucune demande n'est sélectionnée, ne rien afficher
   if (!updatedRequest) {
     return null;
@@ -254,7 +287,15 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
           </TabsContent>
         </Tabs>
 
-        <DialogFooter className="mt-6">
+        <DialogFooter className="mt-6 flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={handleSendToReception}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Renvoyer à l'accueil
+          </Button>
           <Button variant="outline" onClick={() => setIsOpen(false)}>
             Fermer
           </Button>

@@ -31,6 +31,7 @@ import Payments from './pages/Payments';
 import Notifications from './pages/Notifications';
 import Companies from './pages/Companies';
 import Support from './pages/Support';
+import EvaluationPreliminary from './pages/EvaluationPreliminary';
 
 function App() {
   return (
@@ -54,6 +55,9 @@ function App() {
             } />
             <Route path="/certification-requests" element={
               <ProtectedRoute element={<CertificationRequests />} requiredPermission="view_all_requests" />
+            } />
+            <Route path="/evaluation-preliminary" element={
+              <ProtectedRoute element={<EvaluationPreliminary />} requiredPermission="evaluate_requests" />
             } />
             <Route path="/certifications" element={
               <ProtectedRoute element={<Certifications />} />
