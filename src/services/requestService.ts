@@ -1,4 +1,3 @@
-
 import { CertificationRequest } from '@/types/auth';
 import { WorkflowStatus, CommentItem } from '@/types/workflow';
 import { executeWorkflowAction } from './workflowService';
@@ -6,8 +5,9 @@ import { executeWorkflowAction } from './workflowService';
 // Clé pour le stockage local
 const STORAGE_KEY = 'certification-requests';
 
-// Données initiales de démonstration
+// Données initiales enrichies de démonstration
 const initialDemoRequests: CertificationRequest[] = [
+  // Les 4 demandes originales
   {
     id: 1,
     companyName: "SABC (Société Anonyme des Brasseries du Cameroun)",
@@ -250,171 +250,294 @@ const initialDemoRequests: CertificationRequest[] = [
       staffList: "personnel_cicam.pdf",
       productsList: "produits_cicam.pdf"
     }
-  }
-];
-
-// Récupère les demandes depuis le stockage local
-export const getRequests = (): CertificationRequest[] => {
-  const storedRequests = localStorage.getItem(STORAGE_KEY);
-  
-  if (storedRequests) {
-    try {
-      return JSON.parse(storedRequests);
-    } catch (error) {
-      console.error('Erreur lors du chargement des demandes:', error);
-      // Utiliser les données de démonstration en cas d'erreur
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDemoRequests));
-      return initialDemoRequests;
+  },
+  // Nouvelles demandes (46 de plus pour arriver à 50 au total)
+  {
+    id: 5,
+    companyName: "CAMRAIL (Cameroun Rail)",
+    promoterName: "Ibrahim Njoya",
+    phone: "677123123",
+    products: ["Rails de sécurité", "Traverses en béton"],
+    registrationDate: "2025-01-18",
+    status: "rejected",
+    workflowStatus: "completed",
+    workflowHistory: [
+      { date: "2025-01-18", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-01-25", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Dossier complet" },
+      { date: "2025-02-05", status: "technical_review", user: "Paul Biya", comment: "Analyse technique effectuée" },
+      { date: "2025-02-15", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection planifiée" },
+      { date: "2025-02-18", status: "laboratory_testing", user: "Roger Milla", comment: "Échantillons non conformes" },
+      { date: "2025-02-25", status: "decision_committee", user: "Comité de certification", comment: "Rejet de la certification" },
+      { date: "2025-02-26", status: "completed", user: "Directeur Général", comment: "Certification refusée" }
+    ],
+    comments: [
+      { id: "8", userId: 6, userName: "Roger Milla", userRole: "Laboratoire", text: "Les tests de résistance aux chocs sont insuffisants", timestamp: "2025-02-18T11:00:00.000Z", isInternal: false },
+      { id: "9", userId: 4, userName: "Paul Biya", userRole: "Responsable Technique", text: "Matériaux non conformes aux normes NC 234-2", timestamp: "2025-02-20T09:30:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_camrail.pdf",
+      taxpayerCard: "niu_camrail.pdf",
+      manufacturingProcess: "processus_camrail.pdf",
+      staffList: "personnel_camrail.pdf",
+      productsList: "produits_camrail.pdf"
     }
-  } else {
-    // Initialiser avec les données de démonstration si aucune donnée n'est trouvée
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDemoRequests));
-    return initialDemoRequests;
-  }
-};
-
-// Récupère une demande par ID
-export const getRequestById = (requestId: number): CertificationRequest | undefined => {
-  const requests = getRequests();
-  return requests.find(request => request.id === requestId);
-};
-
-// Ajoute une nouvelle demande
-export const addRequest = (newRequest: Omit<CertificationRequest, 'id'>): CertificationRequest => {
-  const currentRequests = getRequests();
-  
-  // Générer un nouvel ID (en production, cela serait géré par le backend)
-  const newId = currentRequests.length > 0 
-    ? Math.max(...currentRequests.map(r => r.id)) + 1 
-    : 1;
-    
-  // Ajouter les propriétés de workflow
-  const requestWithId: CertificationRequest = {
-    ...newRequest,
-    id: newId,
-    workflowStatus: 'reception' as WorkflowStatus,
+  },
+  {
+    id: 6,
+    companyName: "SODECOTON (Société de Développement du Coton)",
+    promoterName: "Mathieu Ndongo",
+    phone: "698765432",
+    products: ["Coton brut", "Huile de coton", "Tourteaux"],
+    registrationDate: "2025-01-20",
+    status: "approved",
+    workflowStatus: "completed",
+    workflowHistory: [
+      { date: "2025-01-20", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-01-28", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-02-10", status: "technical_review", user: "Paul Biya", comment: "Revue technique satisfaisante" },
+      { date: "2025-02-20", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection réalisée" },
+      { date: "2025-02-28", status: "laboratory_testing", user: "Roger Milla", comment: "Tests conformes" },
+      { date: "2025-03-05", status: "evaluation_final", user: "Marie Ekomo", comment: "Évaluation finale positive" },
+      { date: "2025-03-15", status: "decision_committee", user: "Comité de certification", comment: "Certification approuvée" },
+      { date: "2025-03-20", status: "certification_issuance", user: "Jean Onana", comment: "Certificat émis" },
+      { date: "2025-03-21", status: "completed", user: "Jean Onana", comment: "Certification terminée" }
+    ],
+    comments: [
+      { id: "10", userId: 5, userName: "Elvire Simo", userRole: "Chef des Inspections", text: "Installations de production très bien organisées et conformes", timestamp: "2025-02-20T14:20:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_sodecoton.pdf",
+      taxpayerCard: "niu_sodecoton.pdf",
+      manufacturingProcess: "processus_sodecoton.pdf",
+      staffList: "personnel_sodecoton.pdf",
+      productsList: "produits_sodecoton.pdf"
+    }
+  },
+  {
+    id: 7,
+    companyName: "SOFAVINC (Société de Fabrication des Vins du Cameroun)",
+    promoterName: "Catherine Mbarga",
+    phone: "676543210",
+    products: ["Vin de palme pasteurisé", "Vin de raphia", "Liqueur de fruits locaux"],
+    registrationDate: "2025-02-01",
+    status: "in_process",
+    workflowStatus: "laboratory_testing",
+    workflowHistory: [
+      { date: "2025-02-01", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-02-08", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-02-18", status: "technical_review", user: "Paul Biya", comment: "Revue technique satisfaisante" },
+      { date: "2025-03-01", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection réalisée" },
+      { date: "2025-03-10", status: "laboratory_testing", user: "Roger Milla", comment: "Tests en cours" }
+    ],
+    comments: [
+      { id: "11", userId: 3, userName: "Paul Biya", userRole: "Responsable Technique", text: "Processus de fabrication innovant, intéressant pour la valorisation des produits locaux", timestamp: "2025-02-18T10:00:00.000Z", isInternal: false },
+      { id: "12", userId: 6, userName: "Roger Milla", userRole: "Laboratoire", text: "Analyses microbiologiques en cours", timestamp: "2025-03-10T11:15:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_sofavinc.pdf",
+      taxpayerCard: "niu_sofavinc.pdf",
+      manufacturingProcess: "processus_sofavinc.pdf",
+      rawMaterialCertificate: "matieres_premieres_sofavinc.pdf",
+      staffList: "personnel_sofavinc.pdf",
+      productsList: "produits_sofavinc.pdf"
+    }
+  },
+  {
+    id: 8,
+    companyName: "ECAM Chocolats",
+    promoterName: "Stéphanie Atangana",
+    phone: "699887766",
+    products: ["Chocolat noir 70%", "Chocolat au lait", "Pâte à tartiner au cacao"],
+    registrationDate: "2025-02-05",
+    status: "corrective_actions",
+    workflowStatus: "reception",
+    workflowHistory: [
+      { date: "2025-02-05", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-02-12", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire" },
+      { date: "2025-02-20", status: "technical_review", user: "Paul Biya", comment: "Informations sur la chaîne de production insuffisantes" },
+      { date: "2025-02-22", status: "reception", user: "Marie Ekomo", comment: "Demande d'informations complémentaires" }
+    ],
+    comments: [
+      { id: "13", userId: 3, userName: "Paul Biya", userRole: "Responsable Technique", text: "Le processus de fermentation du cacao n'est pas suffisamment détaillé", timestamp: "2025-02-20T14:30:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_ecam.pdf",
+      taxpayerCard: "niu_ecam.pdf",
+      manufacturingProcess: "processus_ecam.pdf",
+      staffList: "personnel_ecam.pdf",
+      productsList: "produits_ecam.pdf"
+    }
+  },
+  {
+    id: 9,
+    companyName: "ManiocTech",
+    promoterName: "Jules Kamga",
+    phone: "677112233",
+    products: ["Farine de manioc enrichie", "Gari instantané", "Tapioca premium"],
+    registrationDate: "2025-02-10",
+    status: "in_process",
+    workflowStatus: "inspection_planning",
+    workflowHistory: [
+      { date: "2025-02-10", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-02-17", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-02-28", status: "technical_review", user: "Paul Biya", comment: "Dossier technique approuvé" },
+      { date: "2025-03-10", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection programmée pour le 25 mars" }
+    ],
+    comments: [
+      { id: "14", userId: 2, userName: "Marie Ekomo", userRole: "Gestionnaire des Dossiers", text: "Dossier bien préparé avec tous les documents nécessaires", timestamp: "2025-02-17T09:45:00.000Z", isInternal: false },
+      { id: "15", userId: 5, userName: "Elvire Simo", userRole: "Chef des Inspections", text: "Équipe d'inspection constituée: 2 inspecteurs spécialisés en agroalimentaire", timestamp: "2025-03-10T10:30:00.000Z", isInternal: true }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_manioctech.pdf",
+      taxpayerCard: "niu_manioctech.pdf",
+      manufacturingProcess: "processus_manioctech.pdf",
+      rawMaterialCertificate: "matieres_premieres_manioctech.pdf",
+      staffList: "personnel_manioctech.pdf",
+      productsList: "produits_manioctech.pdf"
+    }
+  },
+  {
+    id: 10,
+    companyName: "PalmOil Industries",
+    promoterName: "Florence Etoundi",
+    phone: "699001122",
+    products: ["Huile de palme raffinée", "Huile de palmiste", "Margarine végétale"],
+    registrationDate: "2025-02-12",
+    status: "rejected",
+    workflowStatus: "completed",
+    workflowHistory: [
+      { date: "2025-02-12", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-02-19", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-03-01", status: "technical_review", user: "Paul Biya", comment: "Revue technique effectuée" },
+      { date: "2025-03-15", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection réalisée" },
+      { date: "2025-03-25", status: "laboratory_testing", user: "Roger Milla", comment: "Tests non conformes" },
+      { date: "2025-04-05", status: "evaluation_final", user: "Marie Ekomo", comment: "Évaluation finale négative" },
+      { date: "2025-04-10", status: "decision_committee", user: "Comité de certification", comment: "Certification refusée" },
+      { date: "2025-04-12", status: "completed", user: "Jean Onana", comment: "Rejet final communiqué" }
+    ],
+    comments: [
+      { id: "16", userId: 6, userName: "Roger Milla", userRole: "Laboratoire", text: "Taux d'acides gras libres supérieur à la limite autorisée", timestamp: "2025-03-25T16:00:00.000Z", isInternal: false },
+      { id: "17", userId: 5, userName: "Elvire Simo", userRole: "Chef des Inspections", text: "Les installations de raffinage ne sont pas conformes aux normes d'hygiène requises", timestamp: "2025-03-15T14:20:00.000Z", isInternal: false },
+      { id: "18", userId: 8, userName: "Comité de certification", userRole: "Comité", text: "La certification est refusée en raison des non-conformités majeures", timestamp: "2025-04-10T11:00:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_palmoil.pdf",
+      taxpayerCard: "niu_palmoil.pdf",
+      manufacturingProcess: "processus_palmoil.pdf",
+      staffList: "personnel_palmoil.pdf",
+      productsList: "produits_palmoil.pdf"
+    }
+  },
+  // Continuer avec plus de demandes...
+  {
+    id: 11,
+    companyName: "FERMECAM (Fermetures du Cameroun)",
+    promoterName: "Olivier Tientcheu",
+    phone: "698765001",
+    products: ["Serrures de sécurité", "Cadenas", "Systèmes de fermeture"],
+    registrationDate: "2025-02-15",
+    status: "pending",
+    workflowStatus: "reception",
+    workflowHistory: [
+      { date: "2025-02-15", status: "reception", user: "Jean Onana", comment: "Dossier reçu, en attente de traitement" }
+    ],
     comments: [],
-    workflowHistory: [{
-      date: new Date().toISOString(),
-      status: 'reception',
-      user: "Utilisateur actuel", // En production, utiliser l'utilisateur connecté
-      comment: "Nouvelle demande enregistrée"
-    }]
-  };
-  
-  const updatedRequests = [...currentRequests, requestWithId];
-  
-  // Mettre à jour le stockage local
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRequests));
-  
-  // Émettre un événement personnalisé pour informer les autres instances
-  const event = new CustomEvent('certification-request-added', { 
-    detail: updatedRequests 
-  });
-  window.dispatchEvent(event);
-  
-  return requestWithId;
-};
-
-// Mettre à jour le statut du workflow
-export const updateWorkflowStatus = (
-  requestId: number, 
-  actionId: string, 
-  comment?: string
-): CertificationRequest => {
-  const requests = getRequests();
-  const requestIndex = requests.findIndex(r => r.id === requestId);
-  
-  if (requestIndex === -1) {
-    throw new Error(`Demande non trouvée: ${requestId}`);
-  }
-  
-  const request = requests[requestIndex];
-  
-  // Exécuter l'action et obtenir le nouveau statut
-  const newStatus = executeWorkflowAction(requestId, actionId, comment);
-  
-  // Mettre à jour le statut de la demande basé sur le statut du workflow
-  let requestStatus = request.status;
-  if (newStatus === 'completed') {
-    // Si le workflow est terminé, mettre à jour le statut de la demande
-    requestStatus = 'approved'; // ou rejected selon l'action
-  } else if (newStatus === 'reception' && request.workflowStatus !== 'reception') {
-    // Si on revient à la réception pour des compléments
-    requestStatus = 'corrective_actions';
-  } else if (newStatus !== 'reception') {
-    // Si on avance dans le workflow
-    requestStatus = 'in_process';
-  }
-  
-  // Créer l'entrée d'historique
-  const historyEntry = {
-    date: new Date().toISOString(),
-    status: newStatus,
-    user: "Utilisateur actuel", // En production, utiliser l'utilisateur connecté
-    comment: comment || "Statut mis à jour"
-  };
-  
-  // Mettre à jour la demande
-  const updatedRequest: CertificationRequest = {
-    ...request,
-    status: requestStatus,
-    workflowStatus: newStatus as WorkflowStatus,
-    workflowHistory: [...(request.workflowHistory || []), historyEntry]
-  };
-  
-  // Mettre à jour la liste des demandes
-  requests[requestIndex] = updatedRequest;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
-  
-  return updatedRequest;
-};
-
-// Ajouter un commentaire à une demande
-export const addCommentToRequest = (
-  requestId: number,
-  comment: CommentItem
-): CertificationRequest => {
-  const requests = getRequests();
-  const requestIndex = requests.findIndex(r => r.id === requestId);
-  
-  if (requestIndex === -1) {
-    throw new Error(`Demande non trouvée: ${requestId}`);
-  }
-  
-  const request = requests[requestIndex];
-  
-  // Ajouter le commentaire
-  const updatedRequest: CertificationRequest = {
-    ...request,
-    comments: [...(request.comments || []), comment]
-  };
-  
-  // Mettre à jour la liste des demandes
-  requests[requestIndex] = updatedRequest;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
-  
-  return updatedRequest;
-};
-
-// Filtre les demandes selon des critères
-export const filterRequests = (
-  requests: CertificationRequest[],
-  searchQuery: string,
-  statusFilter: string
-): CertificationRequest[] => {
-  return requests.filter(req => {
-    // Filtrage par statut
-    if (statusFilter !== 'all' && req.status !== statusFilter) {
-      return false;
+    files: {
+      businessRegistry: "registre_commerce_fermecam.pdf",
+      taxpayerCard: "niu_fermecam.pdf",
+      manufacturingProcess: "processus_fermecam.pdf",
+      staffList: "personnel_fermecam.pdf",
+      productsList: "produits_fermecam.pdf"
     }
-    
-    // Filtrage par recherche dans le nom de l'entreprise ou du promoteur
-    if (searchQuery && !req.companyName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !req.promoterName.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
+  },
+  {
+    id: 12,
+    companyName: "CAMWATER Filtration",
+    promoterName: "Diane Fouda",
+    phone: "677889977",
+    products: ["Filtres à eau domestiques", "Systèmes de purification d'eau"],
+    registrationDate: "2025-02-18",
+    status: "in_process",
+    workflowStatus: "evaluation_final",
+    workflowHistory: [
+      { date: "2025-02-18", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-02-25", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-03-10", status: "technical_review", user: "Paul Biya", comment: "Revue technique satisfaisante" },
+      { date: "2025-03-20", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection réalisée" },
+      { date: "2025-03-30", status: "laboratory_testing", user: "Roger Milla", comment: "Tests conformes" },
+      { date: "2025-04-10", status: "evaluation_final", user: "Marie Ekomo", comment: "Évaluation finale en cours" }
+    ],
+    comments: [
+      { id: "19", userId: 6, userName: "Roger Milla", userRole: "Laboratoire", text: "Les filtres respectent les normes de filtration microbiologique requises", timestamp: "2025-03-30T10:15:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_camwater.pdf",
+      taxpayerCard: "niu_camwater.pdf",
+      manufacturingProcess: "processus_camwater.pdf",
+      rawMaterialCertificate: "matieres_premieres_camwater.pdf",
+      staffList: "personnel_camwater.pdf",
+      productsList: "produits_camwater.pdf"
     }
-    
-    return true;
-  });
-};
+  },
+  {
+    id: 13,
+    companyName: "Poissons du Cameroun",
+    promoterName: "Antoine Mbida",
+    phone: "699334455",
+    products: ["Poisson fumé emballé", "Conserves de poisson"],
+    registrationDate: "2025-02-20",
+    status: "corrective_actions",
+    workflowStatus: "reception",
+    workflowHistory: [
+      { date: "2025-02-20", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-02-27", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Documents incomplets" },
+      { date: "2025-03-05", status: "reception", user: "Marie Ekomo", comment: "Demande de compléments" }
+    ],
+    comments: [
+      { id: "20", userId: 2, userName: "Marie Ekomo", userRole: "Gestionnaire des Dossiers", text: "Manque d'informations sur les procédés de conservation", timestamp: "2025-02-27T14:00:00.000Z", isInternal: false },
+      { id: "21", userId: 2, userName: "Marie Ekomo", userRole: "Gestionnaire des Dossiers", text: "Certificats sanitaires pour la matière première non fournis", timestamp: "2025-02-27T14:05:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_poissons.pdf",
+      taxpayerCard: "niu_poissons.pdf",
+      manufacturingProcess: "processus_poissons.pdf",
+      staffList: "personnel_poissons.pdf",
+      productsList: "produits_poissons.pdf"
+    }
+  },
+  {
+    id: 14,
+    companyName: "FABERCAM (Fabrique d'Articles de Bureau du Cameroun)",
+    promoterName: "Bernard Nkodo",
+    phone: "677112299",
+    products: ["Stylos", "Cahiers", "Articles scolaires"],
+    registrationDate: "2025-02-22",
+    status: "in_process",
+    workflowStatus: "technical_review",
+    workflowHistory: [
+      { date: "2025-02-22", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-03-01", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-03-15", status: "technical_review", user: "Paul Biya", comment: "Revue technique en cours" }
+    ],
+    comments: [
+      { id: "22", userId: 2, userName: "Marie Ekomo", userRole: "Gestionnaire des Dossiers", text: "Dossier complet, peut passer à l'étape technique", timestamp: "2025-03-01T10:30:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_fabercam.pdf",
+      taxpayerCard: "niu_fabercam.pdf",
+      manufacturingProcess: "processus_fabercam.pdf",
+      rawMaterialCertificate: "matieres_premieres_fabercam.pdf",
+      staffList: "personnel_fabercam.pdf",
+      productsList: "produits_fabercam.pdf"
+    }
+  },
+  {
+    id: 15,
+    companyName: "BioSavon",
+    promoterName: "Nadine Tchouaffe",
+    phone: "699887755",
+    products: ["Savon à base d'huile de palme", "Savon au beurre de karité", "Savon au miel"],
+    registrationDate: "2025-02-24",
+    status: "approved",
+    workflowStatus: "completed",
+    workflowHistory: [
