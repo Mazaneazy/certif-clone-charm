@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: 'Marie Gestionnaire',
           email: 'gestionnaire@anor.cm',
           role: 'gestionnaire',
-          permissions: ['manage_certifications', 'manage_inspections', 'view_reports', 'view_all_requests', 'register_requests', 'evaluate_requests'],
+          permissions: ['manage_certifications', 'manage_inspections', 'view_reports'],
           department: 'Certifications'
         },
         'inspecteur@anor.cm': {

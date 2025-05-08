@@ -36,46 +36,6 @@ const RequestTable: React.FC<RequestTableProps> = ({ requests, onViewDetails }) 
     }
   };
 
-  const getWorkflowStatusName = (status?: string) => {
-    if (!status) return "Non défini";
-    
-    const statusMap: Record<string, string> = {
-      'reception': 'Réception',
-      'evaluation_preliminary': 'Évaluation préliminaire',
-      'technical_review': 'Revue technique',
-      'inspection_planning': 'Inspection',
-      'laboratory_testing': 'Tests labo',
-      'evaluation_final': 'Évaluation finale',
-      'decision_committee': 'Comité',
-      'certification_issuance': 'Émission certificat',
-      'completed': 'Terminé'
-    };
-    
-    return statusMap[status] || status;
-  };
-
-  const getWorkflowStatusBadge = (status?: string) => {
-    if (!status) return null;
-    
-    const badgeStyles: Record<string, string> = {
-      'reception': 'bg-gray-100 text-gray-800',
-      'evaluation_preliminary': 'bg-blue-50 text-blue-800',
-      'technical_review': 'bg-indigo-50 text-indigo-800',
-      'inspection_planning': 'bg-purple-50 text-purple-800',
-      'laboratory_testing': 'bg-amber-50 text-amber-800',
-      'evaluation_final': 'bg-cyan-50 text-cyan-800',
-      'decision_committee': 'bg-orange-50 text-orange-800',
-      'certification_issuance': 'bg-emerald-50 text-emerald-800',
-      'completed': 'bg-green-100 text-green-800'
-    };
-    
-    return (
-      <Badge variant="outline" className={badgeStyles[status] || 'bg-gray-100 text-gray-800'}>
-        {getWorkflowStatusName(status)}
-      </Badge>
-    );
-  };
-
   return (
     <div className="border rounded-lg overflow-hidden bg-white">
       <Table>
@@ -86,7 +46,6 @@ const RequestTable: React.FC<RequestTableProps> = ({ requests, onViewDetails }) 
             <TableHead>Promoteur</TableHead>
             <TableHead>Date d'enregistrement</TableHead>
             <TableHead>Statut</TableHead>
-            <TableHead>Étape</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -98,7 +57,6 @@ const RequestTable: React.FC<RequestTableProps> = ({ requests, onViewDetails }) 
               <TableCell>{request.promoterName}</TableCell>
               <TableCell>{new Date(request.registrationDate).toLocaleDateString('fr-FR')}</TableCell>
               <TableCell>{getStatusBadge(request.status)}</TableCell>
-              <TableCell>{getWorkflowStatusBadge(request.workflowStatus)}</TableCell>
               <TableCell className="text-right">
                 <Button
                   variant="ghost"

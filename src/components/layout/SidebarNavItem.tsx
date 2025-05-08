@@ -5,7 +5,7 @@ import {
   SidebarMenuItem, 
   SidebarMenuButton 
 } from "@/components/ui/sidebar";
-import { MenuItemType } from '@/types/menu';
+import { MenuItemType } from './SidebarMenu';
 
 interface SidebarNavItemProps {
   item: MenuItemType;

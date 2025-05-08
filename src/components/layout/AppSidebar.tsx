@@ -7,21 +7,23 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from '@/contexts/AuthContext';
 import Logo from '../ui/Logo';
-import SidebarUserProfile from './sidebar/SidebarUserProfile';
-import SidebarNavGroup from './sidebar/SidebarNavGroup';
-import { 
-  getFilteredMenuItems, 
-  getMainMenuItems, 
-  getAccountMenuItems 
-} from './sidebar/SidebarMenus';
+import SidebarUserProfile from './SidebarUserProfile';
+import SidebarNavGroup from './SidebarNavGroup';
+import { getMainMenuItems, getAccountMenuItems, MenuItemType } from './SidebarMenu';
 
 const AppSidebar = () => {
   const { hasPermission, user } = useAuth();
   const location = useLocation();
 
   // Filter menu items based on user permissions
-  const filteredMainMenuItems = getFilteredMenuItems(getMainMenuItems(), hasPermission);
-  const filteredAccountMenuItems = getFilteredMenuItems(getAccountMenuItems(), hasPermission);
+  const filterMenuItems = (items: MenuItemType[]): MenuItemType[] => {
+    return items.filter(
+      item => !item.permission || hasPermission(item.permission)
+    );
+  };
+
+  const filteredMainMenuItems = filterMenuItems(getMainMenuItems());
+  const filteredAccountMenuItems = filterMenuItems(getAccountMenuItems());
 
   // Check if a path is active
   const isPathActive = (path: string) => {

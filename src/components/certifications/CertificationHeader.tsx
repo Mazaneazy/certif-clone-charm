@@ -3,7 +3,6 @@ import React from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExportCertificationsButton from '@/components/certifications/ExportCertificationsButton';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface CertificationHeaderProps {
   filteredCertifications: Array<{
@@ -23,14 +22,6 @@ const CertificationHeader: React.FC<CertificationHeaderProps> = ({
   filteredCertifications,
   onCreateCertification,
 }) => {
-  const { user } = useAuth();
-  
-  // Rôles qui ne devraient pas voir le bouton "Nouvelle certification"
-  const restrictedRoles = ['responsable_technique', 'chef_inspections', 'directeur_evaluation', 'inspecteur'];
-  
-  // Vérifier si l'utilisateur actuel a un rôle qui devrait voir le bouton
-  const shouldShowButton = user && !restrictedRoles.includes(user.role);
-  
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
@@ -42,12 +33,10 @@ const CertificationHeader: React.FC<CertificationHeaderProps> = ({
           certifications={filteredCertifications}
           isDisabled={filteredCertifications.length === 0}
         />
-        {shouldShowButton && (
-          <Button onClick={onCreateCertification} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 self-start sm:self-auto">
-            <PlusCircle className="h-4 w-4" />
-            <span>Nouvelle certification</span>
-          </Button>
-        )}
+        <Button onClick={onCreateCertification} className="flex items-center gap-2 bg-green-600 hover:bg-green-700 self-start sm:self-auto">
+          <PlusCircle className="h-4 w-4" />
+          <span>Nouvelle certification</span>
+        </Button>
       </div>
     </div>
   );
