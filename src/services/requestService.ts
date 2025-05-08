@@ -1,4 +1,3 @@
-
 import { CertificationRequest } from '@/types/auth';
 import { WorkflowStatus, CommentItem } from '@/types/workflow';
 import { executeWorkflowAction } from './workflowService';
@@ -672,8 +671,8 @@ export const updateRequest = (updatedRequest: CertificationRequest): Certificati
 // Ajouter un commentaire à une demande
 export const addCommentToRequest = (
   requestId: number, 
-  comment: Omit<CommentItem, 'id'>
-): CommentItem => {
+  comment: CommentItem
+): CertificationRequest => {
   const request = getRequestById(requestId);
   
   if (!request) {
@@ -682,20 +681,14 @@ export const addCommentToRequest = (
   
   const comments = request.comments || [];
   
-  // Générer un ID unique pour le commentaire
-  const commentId = `${comments.length + 1}_${Date.now()}`;
+  // Create a copy of the request to avoid modifying the original
+  const updatedRequest = { ...request };
   
-  // Créer le commentaire complet
-  const newComment: CommentItem = {
-    id: commentId,
-    ...comment
-  };
+  // Add the comment to the copied request
+  updatedRequest.comments = [...comments, comment];
   
-  // Ajouter le commentaire et mettre à jour la demande
-  request.comments = [...comments, newComment];
-  updateRequest(request);
-  
-  return newComment;
+  // Update and return the request with the new comment
+  return updateRequest(updatedRequest);
 };
 
 // Mettre à jour le statut du workflow

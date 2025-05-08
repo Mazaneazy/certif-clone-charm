@@ -114,21 +114,24 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
         isInternal
       };
 
+      // Fix: Get the updated request object and set it to state
       const updated = addCommentToRequest(updatedRequest.id, newComment);
-      // Fix: Now we're correctly setting the updated request that's returned from the addCommentToRequest function
-      setUpdatedRequest(updated);
       
-      if (onRequestUpdated) {
-        // Fix: Also correctly passing the updated request to the parent component callback
-        onRequestUpdated(updated);
-      }
+      // Only update state if we have a valid returned request
+      if (updated) {
+        setUpdatedRequest(updated);
+        
+        if (onRequestUpdated) {
+          onRequestUpdated(updated);
+        }
 
-      toast({
-        title: "Commentaire ajouté",
-        description: isInternal 
-          ? "Votre commentaire interne a été ajouté avec succès" 
-          : "Votre commentaire a été ajouté avec succès",
-      });
+        toast({
+          title: "Commentaire ajouté",
+          description: isInternal 
+            ? "Votre commentaire interne a été ajouté avec succès" 
+            : "Votre commentaire a été ajouté avec succès",
+        });
+      }
 
     } catch (error) {
       console.error("Erreur lors de l'ajout du commentaire:", error);

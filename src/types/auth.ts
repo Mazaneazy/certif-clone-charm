@@ -97,4 +97,5 @@ export interface InspectionMission {
 }
 
 // Re-exporting FeesCalculation from workflow to fix import issues
-export { FeesCalculation } from './workflow';
+// Using export type for isolatedModules compliance
+export type { FeesCalculation } from './workflow';
