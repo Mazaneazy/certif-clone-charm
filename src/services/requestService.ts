@@ -1,3 +1,4 @@
+
 import { CertificationRequest } from '@/types/auth';
 import { WorkflowStatus, CommentItem } from '@/types/workflow';
 import { executeWorkflowAction } from './workflowService';
@@ -541,3 +542,215 @@ const initialDemoRequests: CertificationRequest[] = [
     status: "approved",
     workflowStatus: "completed",
     workflowHistory: [
+      { date: "2025-02-24", status: "reception", user: "Jean Onana", comment: "Dossier reçu" },
+      { date: "2025-03-01", status: "evaluation_preliminary", user: "Marie Ekomo", comment: "Évaluation préliminaire complétée" },
+      { date: "2025-03-10", status: "technical_review", user: "Paul Biya", comment: "Revue technique satisfaisante" },
+      { date: "2025-03-15", status: "inspection_planning", user: "Elvire Simo", comment: "Inspection réalisée" },
+      { date: "2025-03-20", status: "laboratory_testing", user: "Roger Milla", comment: "Tests conformes" },
+      { date: "2025-03-25", status: "evaluation_final", user: "Marie Ekomo", comment: "Évaluation finale positive" },
+      { date: "2025-04-01", status: "decision_committee", user: "Comité de certification", comment: "Certification approuvée" },
+      { date: "2025-04-05", status: "certification_issuance", user: "Jean Onana", comment: "Certificat émis" },
+      { date: "2025-04-06", status: "completed", user: "Jean Onana", comment: "Certification terminée" }
+    ],
+    comments: [
+      { id: "23", userId: 3, userName: "Paul Biya", userRole: "Responsable Technique", text: "Formulation à base d'ingrédients naturels répondant aux normes du secteur", timestamp: "2025-03-10T11:20:00.000Z", isInternal: false },
+      { id: "24", userId: 6, userName: "Roger Milla", userRole: "Laboratoire", text: "Les tests confirment l'absence de métaux lourds et conformité pH", timestamp: "2025-03-20T14:15:00.000Z", isInternal: false }
+    ],
+    files: {
+      businessRegistry: "registre_commerce_biosavon.pdf",
+      taxpayerCard: "niu_biosavon.pdf",
+      manufacturingProcess: "processus_biosavon.pdf",
+      rawMaterialCertificate: "matieres_premieres_biosavon.pdf",
+      staffList: "personnel_biosavon.pdf",
+      productsList: "produits_biosavon.pdf"
+    }
+  }
+  // Ajouter plus de demandes selon les besoins pour atteindre 50
+];
+
+// Initialiser le stockage avec les données de démonstration
+const initializeStorage = () => {
+  const existingData = localStorage.getItem(STORAGE_KEY);
+  if (!existingData) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialDemoRequests));
+  }
+};
+
+// Récupérer toutes les demandes
+export const getRequests = (): CertificationRequest[] => {
+  initializeStorage();
+  const data = localStorage.getItem(STORAGE_KEY);
+  return data ? JSON.parse(data) : [];
+};
+
+// Récupérer une seule demande par son ID
+export const getRequestById = (id: number): CertificationRequest | undefined => {
+  const requests = getRequests();
+  return requests.find(request => request.id === id);
+};
+
+// Filtrer les demandes selon critères
+export const filterRequests = (
+  requests: CertificationRequest[],
+  searchQuery: string = '',
+  statusFilter: string = 'all'
+): CertificationRequest[] => {
+  return requests.filter(request => {
+    // Filtre par terme de recherche
+    const matchesSearch = searchQuery === '' || 
+      request.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.promoterName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      request.products.some(product => product.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    // Filtre par statut
+    const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+};
+
+// Ajouter une nouvelle demande
+export const addRequest = (newRequest: Omit<CertificationRequest, 'id'>): CertificationRequest => {
+  const requests = getRequests();
+  
+  // Générer un nouvel identifiant
+  const maxId = requests.reduce((max, request) => Math.max(max, request.id), 0);
+  const id = maxId + 1;
+  
+  // Définir les valeurs par défaut pour les champs manquants
+  const status = newRequest.status || 'pending';
+  const workflowStatus = newRequest.workflowStatus || 'reception';
+  const registrationDate = newRequest.registrationDate || new Date().toISOString().split('T')[0];
+  
+  // Créer le nouvel objet avec toutes les propriétés
+  const completeRequest: CertificationRequest = {
+    ...newRequest,
+    id,
+    status,
+    workflowStatus,
+    registrationDate,
+    comments: newRequest.comments || [],
+    workflowHistory: newRequest.workflowHistory || [
+      {
+        date: registrationDate,
+        status: 'reception',
+        user: 'Système',
+        comment: 'Demande créée automatiquement'
+      }
+    ],
+    files: newRequest.files || {}
+  };
+  
+  // Ajouter à la liste et sauvegarder
+  const updatedRequests = [...requests, completeRequest];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedRequests));
+  
+  // Déclencher un événement personnalisé pour notifier les autres composants
+  const event = new CustomEvent('certification-request-added', { 
+    detail: updatedRequests 
+  });
+  window.dispatchEvent(event);
+  
+  return completeRequest;
+};
+
+// Mettre à jour une demande existante
+export const updateRequest = (updatedRequest: CertificationRequest): CertificationRequest => {
+  const requests = getRequests();
+  const index = requests.findIndex(r => r.id === updatedRequest.id);
+  
+  if (index === -1) {
+    throw new Error(`Demande avec ID ${updatedRequest.id} non trouvée`);
+  }
+  
+  requests[index] = updatedRequest;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+  
+  return updatedRequest;
+};
+
+// Ajouter un commentaire à une demande
+export const addCommentToRequest = (
+  requestId: number, 
+  comment: Omit<CommentItem, 'id'>
+): CommentItem => {
+  const request = getRequestById(requestId);
+  
+  if (!request) {
+    throw new Error(`Demande avec ID ${requestId} non trouvée`);
+  }
+  
+  const comments = request.comments || [];
+  
+  // Générer un ID unique pour le commentaire
+  const commentId = `${comments.length + 1}_${Date.now()}`;
+  
+  // Créer le commentaire complet
+  const newComment: CommentItem = {
+    id: commentId,
+    ...comment
+  };
+  
+  // Ajouter le commentaire et mettre à jour la demande
+  request.comments = [...comments, newComment];
+  updateRequest(request);
+  
+  return newComment;
+};
+
+// Mettre à jour le statut du workflow
+export const updateWorkflowStatus = (
+  requestId: number, 
+  actionId: string, 
+  comment?: string
+): CertificationRequest => {
+  const request = getRequestById(requestId);
+  
+  if (!request) {
+    throw new Error(`Demande avec ID ${requestId} non trouvée`);
+  }
+  
+  // Exécuter l'action du workflow pour obtenir le nouveau statut
+  const newStatus = executeWorkflowAction(requestId, actionId, comment);
+  
+  // Mettre à jour la demande
+  const now = new Date().toISOString();
+  const userRole = "Système"; // Dans une application réelle, ce serait l'utilisateur connecté
+  
+  // Ajouter l'entrée à l'historique du workflow
+  const historyEntry = {
+    date: now.split('T')[0],
+    status: newStatus,
+    user: userRole,
+    comment: comment || `Statut mis à jour vers ${newStatus}`
+  };
+  
+  request.workflowStatus = newStatus;
+  request.workflowHistory = [...(request.workflowHistory || []), historyEntry];
+  
+  // Mettre à jour le statut global de la demande en fonction du workflow
+  if (newStatus === 'reception') {
+    request.status = 'corrective_actions';
+  } else if (newStatus === 'completed') {
+    // Vérifier si c'est une approbation ou un rejet
+    const isRejected = actionId === 'reject_certification';
+    request.status = isRejected ? 'rejected' : 'approved';
+  } else {
+    request.status = 'in_process';
+  }
+  
+  return updateRequest(request);
+};
+
+// Supprimer une demande
+export const deleteRequest = (id: number): boolean => {
+  const requests = getRequests();
+  const filteredRequests = requests.filter(request => request.id !== id);
+  
+  if (filteredRequests.length === requests.length) {
+    return false; // Aucune demande n'a été supprimée
+  }
+  
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredRequests));
+  return true;
+};
