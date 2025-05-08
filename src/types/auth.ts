@@ -95,7 +95,3 @@ export interface InspectionMission {
   status: 'scheduled' | 'in_progress' | 'completed';
   reportFile?: string;
 }
-
-// Re-exporting FeesCalculation from workflow to fix import issues
-// Using export type for isolatedModules compliance
-export type { FeesCalculation } from './workflow';

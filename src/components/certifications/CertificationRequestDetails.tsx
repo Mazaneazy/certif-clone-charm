@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Download, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -114,24 +113,19 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
         isInternal
       };
 
-      // Fix: Get the updated request object and set it to state
       const updated = addCommentToRequest(updatedRequest.id, newComment);
+      setUpdatedRequest(updated);
       
-      // Only update state if we have a valid returned request
-      if (updated) {
-        setUpdatedRequest(updated);
-        
-        if (onRequestUpdated) {
-          onRequestUpdated(updated);
-        }
-
-        toast({
-          title: "Commentaire ajouté",
-          description: isInternal 
-            ? "Votre commentaire interne a été ajouté avec succès" 
-            : "Votre commentaire a été ajouté avec succès",
-        });
+      if (onRequestUpdated) {
+        onRequestUpdated(updated);
       }
+
+      toast({
+        title: "Commentaire ajouté",
+        description: isInternal 
+          ? "Votre commentaire interne a été ajouté avec succès" 
+          : "Votre commentaire a été ajouté avec succès",
+      });
 
     } catch (error) {
       console.error("Erreur lors de l'ajout du commentaire:", error);

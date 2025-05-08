@@ -38,8 +38,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { TestParameter, CertificationRequest } from '@/types/auth';
-import { FeesCalculation } from '@/types/workflow';
+import { TestParameter, CertificationRequest, FeesCalculation } from '@/types/auth';
 
 // Demo test parameters
 const demoParameters: TestParameter[] = [
