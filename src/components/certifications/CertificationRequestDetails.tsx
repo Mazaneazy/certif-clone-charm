@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Download, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -114,9 +115,11 @@ const CertificationRequestDetails: React.FC<CertificationRequestDetailsProps> = 
       };
 
       const updated = addCommentToRequest(updatedRequest.id, newComment);
+      // Fix: Now we're correctly setting the updated request that's returned from the addCommentToRequest function
       setUpdatedRequest(updated);
       
       if (onRequestUpdated) {
+        // Fix: Also correctly passing the updated request to the parent component callback
         onRequestUpdated(updated);
       }
 
